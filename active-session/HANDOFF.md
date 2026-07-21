@@ -6,6 +6,8 @@ Repository memory scaffold uses the newer SSOT design. `feature-list.json` owns 
 
 The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation` and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
 
+Local branch `main` is ahead of `origin/main` because the commit was created locally but push failed: GitHub HTTPS auth is not configured in this Hermes environment (`gh auth status` says not logged in; `GITHUB_TOKEN`/`GH_TOKEN` are unset).
+
 FEAT-002 is active. The feature is still failing by design because the verification gate remains `STATUS: FAIL` until deterministic validation and simulation evidence exist.
 
 ## Completed
@@ -27,6 +29,7 @@ FEAT-002 is active. The feature is still failing by design because the verificat
 - Fixed `scripts/update-feature.py` so gate checks only pass on an exact verification status line set to pass, avoiding false positives from explanatory text.
 - Appended progress notes to `active-session/progress.log`.
 - Added sanitized route example, route/spray/safety/operator contract docs, deterministic validation script, `.gitignore`, and SITL simulation plan.
+- Created local commit `962e893` (`Advance FEAT-002 design contracts`); push failed because GitHub auth is not configured.
 
 ## Verification
 

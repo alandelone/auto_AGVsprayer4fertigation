@@ -9,3 +9,4 @@
 2026-07-21T16:42:10Z Drafted FEAT-002 technical design and execution contract from 01-discovery requirements; kept verification FAIL until deterministic validation and SITL evidence exist.
 2026-07-21T16:42:10Z Fixed gate checker false positive so only an exact verification STATUS line can pass the gate.
 2026-07-21T16:42:10Z Added deterministic route/spray/safety contract docs and validator; confirmed validator passes; SITL commands are not installed locally.
+2026-07-21T16:48:58Z Committed FEAT-002 work locally as 962e893; push to GitHub failed because HTTPS credentials are unavailable and gh is not logged in.
