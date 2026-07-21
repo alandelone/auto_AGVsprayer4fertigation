@@ -5,3 +5,7 @@
 2026-07-22 Saved cucumber field images into docs/images and captured user-provided hardware, route spraying, safety, and simulation requirements in docs/field-reference.md.
 2026-07-22 Initialized local Git metadata, configured origin as https://github.com/alandelone/auto_AGVsprayer4fertigation.git, and prepared initial main-branch push.
 2026-07-22 Committed initial scaffold and pushed `main` to GitHub with upstream tracking.
+2026-07-21T16:42:10Z Cloned repository into Evergreen4 workspace, reviewed hot context, ran gate check, and found FEAT-002 still failing because verification is not PASS.
+2026-07-21T16:42:10Z Drafted FEAT-002 technical design and execution contract from 01-discovery requirements; kept verification FAIL until deterministic validation and SITL evidence exist.
+2026-07-21T16:42:10Z Fixed gate checker false positive so only an exact verification STATUS line can pass the gate.
+2026-07-21T16:42:10Z Added deterministic route/spray/safety contract docs and validator; confirmed validator passes; SITL commands are not installed locally.

@@ -1,0 +1,67 @@
+{
+  "route_id": "cucumber_block_a_row_01_example",
+  "description": "Sanitized example route for one cucumber row. Coordinates are fake and must not be used in a real farm.",
+  "spray_modes": ["OFF", "LEFT", "RIGHT", "BOTH"],
+  "waypoints": {
+    "WP001": { "lat": 0.000100, "lon": 0.000100, "label": "staging_area" },
+    "WP002": { "lat": 0.000110, "lon": 0.000120, "label": "row_01_entry" },
+    "WP003": { "lat": 0.000120, "lon": 0.000130, "label": "row_01_spray_start" },
+    "WP004": { "lat": 0.000180, "lon": 0.000130, "label": "row_01_spray_end" },
+    "WP005": { "lat": 0.000190, "lon": 0.000135, "label": "row_01_exit" },
+    "WP006": { "lat": 0.000200, "lon": 0.000150, "label": "return_hold" }
+  },
+  "segments": [
+    {
+      "id": "entry_transit",
+      "type": "TRANSIT",
+      "spray": "OFF",
+      "target_speed_mps": 0.35,
+      "waypoints": ["WP001", "WP002"]
+    },
+    {
+      "id": "row_01_align_only",
+      "type": "IN_ROW",
+      "spray": "OFF",
+      "target_speed_mps": 0.20,
+      "waypoints": ["WP002", "WP003"]
+    },
+    {
+      "id": "row_01_left_spray",
+      "type": "IN_ROW",
+      "spray": "LEFT",
+      "target_speed_mps": 0.25,
+      "waypoints": ["WP003", "WP004"]
+    },
+    {
+      "id": "row_01_exit_off",
+      "type": "TRANSIT",
+      "spray": "OFF",
+      "target_speed_mps": 0.25,
+      "waypoints": ["WP004", "WP005"]
+    },
+    {
+      "id": "return_to_hold",
+      "type": "MISSION_END",
+      "spray": "OFF",
+      "target_speed_mps": 0.35,
+      "waypoints": ["WP005", "WP006"]
+    }
+  ],
+  "mission_output_mapping": {
+    "OFF": { "pump": false, "left_valve": false, "right_valve": false },
+    "LEFT": { "pump": true, "left_valve": true, "right_valve": false },
+    "RIGHT": { "pump": true, "left_valve": false, "right_valve": true },
+    "BOTH": { "pump": true, "left_valve": true, "right_valve": true }
+  },
+  "required_faults": [
+    "front_obstacle",
+    "invalid_side_sensor",
+    "low_liquid",
+    "pressure_low",
+    "pressure_high",
+    "low_battery",
+    "rc_loss",
+    "telemetry_loss",
+    "emergency_stop"
+  ]
+}

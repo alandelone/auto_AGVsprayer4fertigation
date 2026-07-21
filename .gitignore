@@ -1,0 +1,11 @@
+# Local simulator/build checkouts
+simulation/ardupilot/
+
+# Python/cache artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local environment and secrets
+.env
+*.env

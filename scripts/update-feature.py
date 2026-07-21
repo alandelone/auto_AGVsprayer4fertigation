@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -50,8 +51,11 @@ def check_gate(feature_file: Path) -> tuple[bool, list[str]]:
     verification_path = gate_dir / "04-verification.md"
     if verification_path.is_file():
         verification = verification_path.read_text(encoding="utf-8")
-        if "STATUS: PASS" not in verification:
-            errors.append("verification gate must contain STATUS: PASS")
+        status_match = re.search(r"^STATUS:\s*(PASS|FAIL)\s*$", verification, re.MULTILINE)
+        if not status_match:
+            errors.append("verification gate must contain an exact STATUS line")
+        elif status_match.group(1) != "PASS":
+            errors.append("verification gate status must be PASS")
 
     return not errors, errors
 
