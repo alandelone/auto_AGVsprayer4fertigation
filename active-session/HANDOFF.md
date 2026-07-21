@@ -4,6 +4,7 @@
 
 Repository memory scaffold uses the newer SSOT design. `feature-list.json` owns `active_feature`; `mission_status.json` has been removed. FEAT-002 discovery now includes PDF-derived requirements plus user-provided hardware, field photos, route-spraying rules, and simulation success criteria.
 Local Git metadata has been initialized after an empty `.git` directory was found, and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
+Branch `main` has been pushed to GitHub and now tracks `origin/main`.
 
 ## Completed
 
@@ -17,6 +18,7 @@ Local Git metadata has been initialized after an empty `.git` directory was foun
 - Saved field images to `docs/images/cucumber-field-row-entrance.jpg` and `docs/images/cucumber-field-under-canopy.jpg`.
 - Created `docs/field-reference.md` for candidate hardware, field constraints, spraying rules, safety requirements, and simulation pass standard.
 - Initialized Git metadata and configured GitHub `origin` for the first `main` push.
+- Pushed `main` to GitHub with upstream tracking.
 
 ## Next Step
 

@@ -4,3 +4,4 @@
 2026-07-22 Filled FEAT-002 discovery gate with Phase 1 Pixhawk + ArduRover + ultrasonic row-following requirements.
 2026-07-22 Saved cucumber field images into docs/images and captured user-provided hardware, route spraying, safety, and simulation requirements in docs/field-reference.md.
 2026-07-22 Initialized local Git metadata, configured origin as https://github.com/alandelone/auto_AGVsprayer4fertigation.git, and prepared initial main-branch push.
+2026-07-22 Committed initial scaffold and pushed `main` to GitHub with upstream tracking.
