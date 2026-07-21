@@ -1,0 +1,21 @@
+{
+  "project": "auto_AGVsprayer4fertigation",
+  "version": "0.1.0",
+  "active_feature": "FEAT-002",
+  "features": [
+    {
+      "id": "FEAT-001",
+      "module": "Project Setup",
+      "title": "Initialize repository memory and stage-gate structure",
+      "context": "Establish progressive-disclosure files before implementation begins.",
+      "passes": true
+    },
+    {
+      "id": "FEAT-002",
+      "module": "AGV Sprayer",
+      "title": "Define autonomous spraying and fertigation requirements",
+      "context": "Capture hardware, routing, safety, sensor, and dosing constraints before coding.",
+      "passes": false
+    }
+  ]
+}

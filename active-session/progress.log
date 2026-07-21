@@ -1,0 +1,6 @@
+2026-07-21 Initialized progressive-disclosure repository scaffold.
+2026-07-22 Refined scaffold to SSOT feature-list, scripts gatekeeper, feature-isolated stage gates, append-only progress log.
+2026-07-22 Extracted requirements from 3D打印无人车自动打药系统.pdf into docs/pdf-extract-3d-agv-sprayer.txt.
+2026-07-22 Filled FEAT-002 discovery gate with Phase 1 Pixhawk + ArduRover + ultrasonic row-following requirements.
+2026-07-22 Saved cucumber field images into docs/images and captured user-provided hardware, route spraying, safety, and simulation requirements in docs/field-reference.md.
+2026-07-22 Initialized local Git metadata, configured origin as https://github.com/alandelone/auto_AGVsprayer4fertigation.git, and prepared initial main-branch push.
