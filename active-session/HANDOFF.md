@@ -2,13 +2,16 @@
 
 ## Current State
 
-Repository memory scaffold uses the newer SSOT design. `feature-list.json` owns `active_feature`; `mission_status.json` has been removed. FEAT-002 discovery includes PDF-derived requirements plus user-provided hardware, field photos, route-spraying rules, and simulation success criteria.
+Repository memory scaffold uses the newer SSOT design. `feature-list.json` owns `active_feature`; `mission_status.json` has been removed.
+
+All listed features currently pass:
+
+- FEAT-001: project setup scaffold is passing.
+- FEAT-002: autonomous spraying and fertigation requirements are passing with deterministic route/spray/safety validation and lightweight mission contract simulation evidence.
 
 The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation` and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
 
-Local branch `main` is ahead of `origin/main` because the commit was created locally but push failed: GitHub HTTPS auth is not configured in this Hermes environment (`gh auth status` says not logged in; `GITHUB_TOKEN`/`GH_TOKEN` are unset).
-
-FEAT-002 is active and now has PASS evidence: deterministic route/spray/safety validation, lightweight mission contract simulation, and ArduRover SITL build/startup proof.
+Current git state at heartbeat: `## main...origin/main` with no working-tree changes before handoff/progress updates. GitHub CLI auth is available for account `alanworkliaolo`.
 
 ## Completed
 
@@ -25,37 +28,49 @@ FEAT-002 is active and now has PASS evidence: deterministic route/spray/safety v
 - Pushed `main` to GitHub with upstream tracking.
 - Drafted `stage-gates/active/FEAT-002/02-tech-design.md` with Phase 1 Pixhawk + ArduRover architecture, route/spray contracts, safety interlocks, configuration strategy, and test strategy.
 - Drafted `stage-gates/active/FEAT-002/03-execution.md` with ordered implementation tasks, expected files, validation commands, and definition of done.
-- Updated `stage-gates/active/FEAT-002/04-verification.md` with current failing gate evidence and next repair steps.
 - Fixed `scripts/update-feature.py` so gate checks only pass on an exact verification status line set to pass, avoiding false positives from explanatory text.
-- Appended progress notes to `active-session/progress.log`.
 - Added sanitized route example, route/spray/safety/operator contract docs, deterministic validation script, `.gitignore`, and SITL simulation plan.
-- Created local commit `962e893` (`Advance FEAT-002 design contracts`); push failed because GitHub auth is not configured.
 - Cloned ArduPilot SITL under ignored path `simulation/ardupilot/`, installed prerequisites, built `bin/ardurover`, and proved headless simulator startup.
 - Added `scripts/simulate-mission-contract.py`, wired it into `scripts/check-gate.sh`, updated FEAT-002 verification to PASS, and marked FEAT-002 passing through `scripts/update-feature.py`.
+- Confirmed on 2026-07-22T03:34:55Z that the active gate passes and all features in `feature-list.json` are marked passing.
 
 ## Verification
 
-Command run:
+Latest command run:
 
 ```bash
+git status --short --branch && \
+printf '\nREMOTES\n' && git remote -v && \
+printf '\nBRANCH\n' && git branch --show-current && \
+printf '\nGH_AUTH\n' && gh auth status 2>&1 || true
+printf '\nGATE\n'
 bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Result:
+Result summary:
 
 ```text
-Initializing auto_AGVsprayer4fertigation workspace...
-No build or test toolchain is configured yet.
-Add setup commands here when source code is introduced.
-FAIL: verification gate status must be PASS
-CHECK_GATE_EXIT=1
+## main...origin/main
+origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
+origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
+main
+gh auth: logged in to github.com account alanworkliaolo
+Gate check passed
+Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
+Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
+CHECK_GATE_EXIT=0
 ```
 
 ## Next Step
 
-Push the FEAT-002 PASS commit, then select the next feature: either MAVLink/Mission Planner export, hardware BOM/pinout, or physical prototype control code.
+The feature queue is clear. Select the next feature to add to `feature-list.json`, recommended options:
+
+1. MAVLink / Mission Planner route export.
+2. Hardware BOM and Pixhawk/Raspberry Pi/pump/valve pinout.
+3. Physical prototype control code.
 
 ## Known Blockers
 
+- No active implementation blocker while the queue is clear.
 - Exact hardware selections and dimensions remain owner-confirmation items for later features.
-- Exact dimensions, motor/steering design, pump/valve/nozzle details, low-liquid sensor, pressure sensor, and selected simulator still need owner confirmation.
+- Exact dimensions, motor/steering design, pump/valve/nozzle details, low-liquid sensor, pressure sensor, and selected simulator still need owner confirmation before physical-build features.
