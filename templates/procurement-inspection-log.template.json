@@ -1,0 +1,19 @@
+{
+  "inspection_log_version": "0.1.0",
+  "feature_id": "FEAT-006",
+  "inspection_date": "YYYY-MM-DD",
+  "inspector": "",
+  "items": [
+    { "id": "P01_PUMP", "received": false, "specs_visible": false, "accepted": false, "notes": "" },
+    { "id": "P02_NOZZLES", "received": false, "specs_visible": false, "accepted": false, "notes": "" },
+    { "id": "P03_VALVES", "received": false, "specs_visible": false, "accepted": false, "notes": "" },
+    { "id": "P04_DRIVER_BOARD", "received": false, "specs_visible": false, "accepted": false, "notes": "" },
+    { "id": "P05_PRESSURE_SENSOR", "received": false, "specs_visible": false, "accepted": false, "notes": "" },
+    { "id": "P06_LOW_LIQUID", "received": false, "specs_visible": false, "accepted": false, "notes": "" },
+    { "id": "P07_ESTOP_POWER", "received": false, "specs_visible": false, "accepted": false, "notes": "" },
+    { "id": "P08_FLUID_PATH", "received": false, "specs_visible": false, "accepted": false, "notes": "" },
+    { "id": "P09_CONTROLLER_TELEMETRY", "received": false, "specs_visible": false, "accepted": false, "notes": "" }
+  ],
+  "overall_status": "PENDING",
+  "private_data_rule": "Do not record supplier account, payment, private shipping, farm coordinate, Wi-Fi, telemetry ID, credentials, or credential data in this file."
+}

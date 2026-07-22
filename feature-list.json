@@ -1,7 +1,7 @@
 {
   "project": "auto_AGVsprayer4fertigation",
   "version": "0.1.0",
-  "active_feature": "FEAT-005",
+  "active_feature": "FEAT-006",
   "features": [
     {
       "id": "FEAT-001",
@@ -36,6 +36,13 @@
       "module": "Bench Prototype",
       "title": "Define water-only bench-test procedure and acceptance log",
       "context": "Create a deterministic, safe bench procedure for leak, pressure, e-stop, low-liquid, valve-zone, and nozzle catch-cup checks before chemical/fertilizer tests.",
+      "passes": true
+    },
+    {
+      "id": "FEAT-006",
+      "module": "Procurement",
+      "title": "Define bench prototype procurement checklist",
+      "context": "Convert the bench hardware ratings and procedure into a buyable checklist with quantities, must-have specs, alternates, inspection criteria, and no-secret/no-farm-data rules.",
       "passes": true
     }
   ]

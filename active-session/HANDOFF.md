@@ -4,7 +4,7 @@
 
 Repository memory scaffold uses the newer SSOT design. `feature-list.json` owns `active_feature`; `mission_status.json` has been removed.
 
-FEAT-005 is active on branch `feat/bench-test-procedure`: water-only bench-test procedure and acceptance log for leak, pressure, e-stop, low-liquid, zone-valve, catch-cup, and fault-safe checks before chemical/fertilizer tests.
+FEAT-006 is active on branch `feat/procurement-checklist`: bench prototype procurement checklist with buy list, must-have specs, reject criteria, receiving inspection, and private-data rules.
 
 All listed features currently pass:
 
@@ -13,10 +13,11 @@ All listed features currently pass:
 - FEAT-003: hardware BOM and Pixhawk/Raspberry Pi/pump/valve pinout are passing with deterministic BOM/pinout validation.
 - FEAT-004: bench-test pump/nozzle/valve/sensor ratings are passing with deterministic rating validation.
 - FEAT-005: water-only bench-test procedure and log template are passing with deterministic procedure validation.
+- FEAT-006: bench prototype procurement checklist is passing with deterministic procurement validation.
 
 The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation` and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
 
-Current git state at heartbeat: PR #1 has been merged to `origin/main`; local `main` was reset to `origin/main` with user approval after squash-merge divergence. Current work is on branch `feat/bench-test-procedure`. GitHub CLI auth is available for account `alanworkliaolo`.
+Current git state at heartbeat: PR #2 has been merged to `origin/main`; current work is on branch `feat/procurement-checklist`. GitHub CLI auth is available for account `alanworkliaolo`.
 
 ## Completed
 
@@ -42,6 +43,7 @@ Current git state at heartbeat: PR #1 has been merged to `origin/main`; local `m
 - Added FEAT-004 bench-test hardware ratings: 12 V 5 L/min 60 PSI diaphragm pump, two 11002-class nozzles at 0.20 GPM/40 PSI, 12 V normally-closed valves, 0–1.2 MPa pressure sensing, low-liquid interlock, fused isolated drivers.
 - Added `hardware/bench-test-ratings.v0.json`, `docs/bench-test-hardware-selection.md`, `scripts/validate-bench-ratings.py`, wired it into `scripts/check-gate.sh`, and marked FEAT-004 passing through `scripts/update-feature.py`.
 - Added FEAT-005 water-only bench-test procedure contract, human procedure doc, log template, deterministic validator, and marked FEAT-005 passing through `scripts/update-feature.py`.
+- Merged PR #2 and added FEAT-006 bench prototype procurement checklist, human buy list, receiving inspection template, deterministic validator, and marked FEAT-006 passing through `scripts/update-feature.py`.
 
 ## Verification
 
@@ -72,7 +74,7 @@ CHECK_GATE_EXIT=0
 
 ## Next Step
 
-Review/merge FEAT-005, then create the next feature for a physical procurement checklist or bench wiring diagram package.
+Review/merge FEAT-006, then create the next feature for bench wiring diagram package.
 
 ## Known Blockers
 
