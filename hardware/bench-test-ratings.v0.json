@@ -1,0 +1,78 @@
+{
+  "version": "0.1.0",
+  "feature_id": "FEAT-004",
+  "scope": "bench-test hardware rating selection; owner must confirm brands/suppliers before purchase",
+  "design_pressure": {
+    "spray_pressure_psi": 40,
+    "spray_pressure_mpa": 0.276,
+    "allowed_bench_range_psi": [30, 60]
+  },
+  "selected_ratings": {
+    "pump": {
+      "type": "12 V DC diaphragm sprayer pump with pressure switch",
+      "rated_flow_lpm_min": 5.0,
+      "rated_pressure_psi_min": 60,
+      "current_a_max_design": 8,
+      "duty": "intermittent bench and low-speed row prototype"
+    },
+    "nozzles": {
+      "type": "110-degree flat-fan agricultural spray tip, TeeJet XR/TP11002-class",
+      "qty": 2,
+      "per_nozzle_flow_gpm_at_40psi": 0.20,
+      "per_nozzle_flow_lpm_at_40psi": 0.76,
+      "total_flow_lpm_at_40psi": 1.51,
+      "spray_zones": ["left", "right"]
+    },
+    "valves": {
+      "type": "normally-closed solenoid valve",
+      "qty": 2,
+      "voltage": "12 V DC",
+      "orifice_mm_min": 4,
+      "pressure_rating_psi_min": 100,
+      "current_a_each_max_design": 1.0
+    },
+    "pressure_sensor": {
+      "type": "water pressure transducer",
+      "range_mpa": [0, 1.2],
+      "output": "0.5-4.5 V analog or isolated switch equivalent",
+      "trip_low_psi": 15,
+      "trip_high_psi": 70
+    },
+    "liquid_level_sensor": {
+      "type": "tank float switch or non-contact level sensor",
+      "logic": "low liquid opens interlock; no auto-resume"
+    },
+    "drivers": {
+      "type": "opto-isolated MOSFET/relay board with flyback protection",
+      "channels_min": 3,
+      "channel_current_a_min": 10
+    },
+    "power": {
+      "actuator_rail": "12 V fused rail",
+      "pump_fuse_a": 10,
+      "valve_fuse_a": 3,
+      "logic_isolation": "separate Pixhawk/Pi BEC or buck supply"
+    }
+  },
+  "fit_check": {
+    "two_nozzle_required_lpm": 1.51,
+    "pump_to_two_nozzle_flow_margin_x": 3.30,
+    "result": "PASS"
+  },
+  "bench_acceptance": [
+    "At 40 PSI, either left or right nozzle sprays while the opposite valve is closed.",
+    "With both zones enabled, total target flow is about 1.51 L/min and pump has at least 3x nominal flow margin.",
+    "Low-liquid or pressure fault cuts pump and both valves off without Raspberry Pi software.",
+    "Pump and solenoid loads are fused and flyback-protected before Pixhawk connection."
+  ],
+  "sources": [
+    {
+      "claim": "TeeJet 11002-class flat fan nozzle is 110 degrees, about 0.20 GPM at 40 PSI, pressure range about 15-60 PSI.",
+      "url": "https://farmerbobsparts.com/teejet-tp11002-brass-flat-fan-spray-tips-110-rated-0-20-gpm-40-psi/"
+    },
+    {
+      "claim": "Common 12 V diaphragm sprayer pumps are available around 5-6 L/min and 60-80 PSI.",
+      "url": "https://www.agrisupply.com/pumps-electric-12-volt/c/4200034"
+    }
+  ]
+}
