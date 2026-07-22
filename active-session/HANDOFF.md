@@ -8,7 +8,7 @@ The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fert
 
 Local branch `main` is ahead of `origin/main` because the commit was created locally but push failed: GitHub HTTPS auth is not configured in this Hermes environment (`gh auth status` says not logged in; `GITHUB_TOKEN`/`GH_TOKEN` are unset).
 
-FEAT-002 is active. The feature is still failing by design because the verification gate remains `STATUS: FAIL` until deterministic validation and simulation evidence exist.
+FEAT-002 is active. ArduRover SITL is installed, built, and start-proven locally, but the feature still fails by design because mission-level row-entry/spray/row-exit/fault-stop evidence is not captured yet.
 
 ## Completed
 
@@ -30,6 +30,7 @@ FEAT-002 is active. The feature is still failing by design because the verificat
 - Appended progress notes to `active-session/progress.log`.
 - Added sanitized route example, route/spray/safety/operator contract docs, deterministic validation script, `.gitignore`, and SITL simulation plan.
 - Created local commit `962e893` (`Advance FEAT-002 design contracts`); push failed because GitHub auth is not configured.
+- Cloned ArduPilot SITL under ignored path `simulation/ardupilot/`, installed prerequisites, built `bin/ardurover`, and proved headless simulator startup.
 
 ## Verification
 
@@ -51,11 +52,10 @@ CHECK_GATE_EXIT=1
 
 ## Next Step
 
-Attempt ArduPilot SITL setup for Rover or choose a lighter local simulator path if SITL installation is too heavy for this VPS. After simulator is proven, capture row-entry/in-row-spray/row-exit/fault-stop evidence in `04-verification.md`.
+Add a mission-level SITL runner or lighter harness that proves row-entry, in-row spray toggles, row-exit, and fault-stop, then update `04-verification.md`. GitHub auth still needs a fresh private token or approved device login before pushing.
 
 ## Known Blockers
 
-- No build, runtime, or test stack is selected yet.
-- No deterministic route/spray/safety validation script exists yet.
-- No ArduPilot SITL or equivalent simulation evidence exists yet.
+- GitHub CLI auth is still unavailable; web device flow timed out and local branch remains ahead of origin.
+- Full mission-level SITL evidence for row-entry/spray/row-exit/fault-stop is not captured yet.
 - Exact dimensions, motor/steering design, pump/valve/nozzle details, low-liquid sensor, pressure sensor, and selected simulator still need owner confirmation.

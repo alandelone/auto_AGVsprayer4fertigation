@@ -46,6 +46,48 @@ ardurover None
 mavproxy.py None
 ```
 
+
+```bash
+git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/ArduPilot/ardupilot.git simulation/ardupilot
+Tools/environment_install/install-prereqs-ubuntu.sh -y
+sudo apt-get install -y python3-empy python3-pexpect python3-future python3-lxml python3-numpy python3-pyparsing
+PYTHONNOUSERSITE=1 /usr/bin/python3 ./waf configure --board sitl
+PYTHONNOUSERSITE=1 /usr/bin/python3 ./waf rover
+```
+
+Output summary:
+
+```text
+'configure' finished successfully
+[1369/1370] Linking build/sitl/bin/ardurover
+[1370/1370] checking symbols build/sitl/bin/ardurover
+BUILD SUMMARY
+Target         Text (B)  Data (B)  BSS (B)  Total Flash Used (B)
+bin/ardurover   4093104    192917   225888               4286021
+'rover' finished successfully (4m52.432s)
+```
+
+```bash
+timeout 8s build/sitl/bin/ardurover --model rover --speedup 1 --sim-address=127.0.0.1 -I1 --home -35.363261,149.16523,584.0,353.0 || code=$?; echo ARDUROVER_EXIT=${code:-0}
+```
+
+Output:
+
+```text
+Setting SIM_SPEEDUP=1.000000
+Home: -35.363261 149.165230 alt=584.000000m hdg=353.000000
+Starting sketch 'Rover'
+Starting SITL input
+Using Irlock at port : 9015
+Using \clock topic for DDS timing: disabled
+bind port 5770 for SERIAL0
+SERIAL0 on TCP port 5770
+Waiting for connection ....
+ARDUROVER_EXIT=124
+```
+
+Note: `ARDUROVER_EXIT=124` is expected because the long-running SITL process was stopped by `timeout` after startup proof.
+
 ## Design Evidence Added
 
 - `stage-gates/active/FEAT-002/02-tech-design.md` now defines:
@@ -74,14 +116,14 @@ mavproxy.py None
 ## Current Blockers
 
 - No deterministic route/spray/safety validation script exists yet.
-- No simulator setup has been selected/proven in this repository yet.
-- No ArduPilot SITL run or equivalent simulation evidence exists yet.
+- ArduRover SITL is installed, built, and start-proven locally.
+- Full mission-level simulation evidence for row-entry, in-row spray toggles, row-exit, and fault-stop is still not captured.
 - Exact row dimensions, drive layout, pump, valves, nozzles, liquid-level sensor, pressure sensor, and selected Pixhawk/firmware version still need owner confirmation.
 
 ## Repair / Next Steps
 
 1. Add route and spray contract documents/examples.
 2. Add deterministic validation script for route segment spray modes and safety fault behavior.
-3. Add simulation README and attempt ArduRover SITL setup.
-4. Capture successful validation/simulation output here.
-5. Change this file to `STATUS: PASS` only after evidence exists and `bash scripts/check-gate.sh` succeeds.
+3. Add a mission-level SITL runner or lighter harness for row-entry, in-row spray toggles, row-exit, and fault-stop.
+4. Capture successful mission-level simulation output here.
+5. Change this file to `STATUS: PASS` only after mission evidence exists and `bash scripts/check-gate.sh` succeeds.
