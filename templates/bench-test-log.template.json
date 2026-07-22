@@ -1,0 +1,32 @@
+{
+  "bench_test_log_version": "0.1.0",
+  "feature_id": "FEAT-005",
+  "test_date": "YYYY-MM-DD",
+  "operator": "",
+  "hardware_config": {
+    "pump": "12 V diaphragm, >=5 L/min, >=60 PSI",
+    "nozzles": "2x 11002-class flat fan",
+    "valves": "2x 12 V normally-closed",
+    "pressure_sensor": "0-1.2 MPa or equivalent gauge/switch",
+    "liquid_level_sensor": "float or non-contact interlock"
+  },
+  "results": [
+    { "id": "T01_DRY_POWER_OFF", "status": "PENDING", "evidence": "" },
+    { "id": "T02_ESTOP_CUT", "status": "PENDING", "evidence": "" },
+    { "id": "T03_PRIME_LEAK", "status": "PENDING", "evidence": "" },
+    { "id": "T04_PRESSURE_LIMITS", "status": "PENDING", "evidence": "" },
+    { "id": "T05_LOW_LIQUID", "status": "PENDING", "evidence": "" },
+    { "id": "T06_ZONE_VALVES", "status": "PENDING", "evidence": "" },
+    {
+      "id": "T07_CATCH_CUP_FLOW",
+      "status": "PENDING",
+      "left_lpm": null,
+      "right_lpm": null,
+      "left_right_difference_percent": null,
+      "evidence": ""
+    },
+    { "id": "T08_FAULT_SAFE_STATE", "status": "PENDING", "evidence": "" }
+  ],
+  "overall_status": "PENDING",
+  "operator_notes": ""
+}
