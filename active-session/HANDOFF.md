@@ -17,7 +17,7 @@ All listed features currently pass:
 
 The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation` and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
 
-Current git state at heartbeat: PR #2 has been merged to `origin/main`; current work is on branch `feat/procurement-checklist`. GitHub CLI auth is available for account `alanworkliaolo`.
+Current git state at heartbeat 2026-07-22T07:43:02Z: working tree was clean before this handoff/progress update on branch `feat/procurement-checklist` tracking `origin/feat/procurement-checklist`. GitHub CLI auth has previously been available for account `alanworkliaolo`.
 
 ## Completed
 
@@ -51,30 +51,33 @@ Latest command run:
 
 ```bash
 git status --short --branch && \
+printf '\nTOPLEVEL\n' && git rev-parse --show-toplevel && \
 printf '\nREMOTES\n' && git remote -v && \
 printf '\nBRANCH\n' && git branch --show-current && \
-printf '\nGH_AUTH\n' && gh auth status 2>&1 || true
-printf '\nGATE\n'
-bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+printf '\nGATE\n' && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
 Result summary:
 
 ```text
-## main...origin/main
+## feat/procurement-checklist...origin/feat/procurement-checklist
+TOPLEVEL /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
-main
-gh auth: logged in to github.com account alanworkliaolo
+feat/procurement-checklist
 Gate check passed
 Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
 Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
+Validated hardware BOM/pinout contract: hardware/bom-pinout.v0.json
+Validated bench ratings contract: hardware/bench-test-ratings.v0.json margin=3.3x
+Validated bench procedure contract: hardware/bench-test-procedure.v0.json tests=8
+Validated procurement checklist: hardware/procurement-checklist.v0.json items=9
 CHECK_GATE_EXIT=0
 ```
 
 ## Next Step
 
-Review/merge FEAT-006, then create the next feature for bench wiring diagram package.
+Queue is clear: all features in `feature-list.json` pass. Recommended next feature options: MAVLink/Mission Planner export, hardware BOM/pinout follow-up / bench wiring diagram package, or physical prototype control code.
 
 ## Known Blockers
 
