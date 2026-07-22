@@ -17,7 +17,7 @@ All listed features currently pass:
 
 The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation` and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
 
-Current git state at heartbeat 2026-07-22T07:43:02Z: working tree was clean before this handoff/progress update on branch `feat/procurement-checklist` tracking `origin/feat/procurement-checklist`. GitHub CLI auth has previously been available for account `alanworkliaolo`.
+Current git state at heartbeat 2026-07-22T10:44:56Z: working tree was clean before this handoff/progress update on branch `feat/procurement-checklist` tracking `origin/feat/procurement-checklist`. GitHub CLI auth has previously been available for account `alanworkliaolo`.
 
 ## Completed
 
@@ -53,7 +53,6 @@ Latest command run:
 git status --short --branch && \
 printf '\nTOPLEVEL\n' && git rev-parse --show-toplevel && \
 printf '\nREMOTES\n' && git remote -v && \
-printf '\nBRANCH\n' && git branch --show-current && \
 printf '\nGATE\n' && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
@@ -64,10 +63,19 @@ Result summary:
 TOPLEVEL /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
-feat/procurement-checklist
+Initializing auto_AGVsprayer4fertigation workspace...
+No build or test toolchain is configured yet.
+Add setup commands here when source code is introduced.
 Gate check passed
 Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
 Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
+- ROW_ENTRY entry_transit: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- SPRAY_ON row_01_left_spray: spray=LEFT speed=0.25 outputs={'pump': True, 'left_valve': True, 'right_valve': False}
+- SPRAY_TRANSITION OFF->LEFT at row_01_left_spray
+- FAULT_STOP front_obstacle during row_01_left_spray: mode=HOLD outputs={'pump': False, 'left_valve': False, 'right_valve': False} operator_review_required=True
+- SPRAY_TRANSITION LEFT->OFF at row_01_exit_off
+- ROW_EXIT row_01_exit_off: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- MISSION_END return_to_hold: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
 Validated hardware BOM/pinout contract: hardware/bom-pinout.v0.json
 Validated bench ratings contract: hardware/bench-test-ratings.v0.json margin=3.3x
 Validated bench procedure contract: hardware/bench-test-procedure.v0.json tests=8
