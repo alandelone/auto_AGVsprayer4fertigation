@@ -4,10 +4,13 @@
 
 Repository memory scaffold uses the newer SSOT design. `feature-list.json` owns `active_feature`; `mission_status.json` has been removed.
 
+FEAT-003 is active on branch `feat/hardware-bom-pinout`: hardware BOM and Pixhawk/Raspberry Pi/pump/valve pinout, explicitly excluding MAVLink/Mission Planner export and ArduRover firmware changes.
+
 All listed features currently pass:
 
 - FEAT-001: project setup scaffold is passing.
 - FEAT-002: autonomous spraying and fertigation requirements are passing with deterministic route/spray/safety validation and lightweight mission contract simulation evidence.
+- FEAT-003: hardware BOM and Pixhawk/Raspberry Pi/pump/valve pinout are passing with deterministic BOM/pinout validation.
 
 The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation` and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
 
@@ -63,14 +66,9 @@ CHECK_GATE_EXIT=0
 
 ## Next Step
 
-The feature queue is clear. Select the next feature to add to `feature-list.json`, recommended options:
-
-1. MAVLink / Mission Planner route export.
-2. Hardware BOM and Pixhawk/Raspberry Pi/pump/valve pinout.
-3. Physical prototype control code.
+Review FEAT-003 hardware BOM/pinout branch, then choose exact pump/nozzle/valve/sensor ratings for bench testing.
 
 ## Known Blockers
 
-- No active implementation blocker while the queue is clear.
-- Exact hardware selections and dimensions remain owner-confirmation items for later features.
+- Exact hardware selections and dimensions remain owner-confirmation items for bench/prototype procurement.
 - Exact dimensions, motor/steering design, pump/valve/nozzle details, low-liquid sensor, pressure sensor, and selected simulator still need owner confirmation before physical-build features.

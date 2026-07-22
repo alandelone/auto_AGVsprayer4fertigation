@@ -13,3 +13,4 @@
 2026-07-22 Installed ArduPilot SITL prerequisites, built Rover SITL, proved headless ardurover startup, and recorded evidence in simulation README and FEAT-002 verification gate. GitHub web auth timed out and remains blocked.
 2026-07-22 Added lightweight mission contract simulator, wired it into check-gate, and updated FEAT-002 verification evidence to PASS.
 2026-07-22T03:34:55Z Heartbeat: read hot context, verified git/GitHub auth, ran init + check-gate successfully; all features in feature-list.json are passing, so no implementation work was invented.
+2026-07-22 Created FEAT-003 hardware BOM/pinout branch, ignored MAVLink export, excluded ArduRover firmware changes, validated gate, and marked FEAT-003 passing.
