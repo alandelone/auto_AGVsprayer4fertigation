@@ -13,3 +13,11 @@ fi
 if [[ -x "$ROOT_DIR/scripts/simulate-mission-contract.py" ]]; then
   python "$ROOT_DIR/scripts/simulate-mission-contract.py"
 fi
+
+if [[ -x "$ROOT_DIR/scripts/validate-hardware-pinout.py" ]]; then
+  python "$ROOT_DIR/scripts/validate-hardware-pinout.py"
+fi
+
+if [[ -x "$ROOT_DIR/scripts/validate-bench-ratings.py" ]]; then
+  python "$ROOT_DIR/scripts/validate-bench-ratings.py"
+fi

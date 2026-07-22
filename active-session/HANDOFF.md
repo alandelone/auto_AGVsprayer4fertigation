@@ -4,14 +4,18 @@
 
 Repository memory scaffold uses the newer SSOT design. `feature-list.json` owns `active_feature`; `mission_status.json` has been removed.
 
+FEAT-004 is active on branch `feat/hardware-bom-pinout`: exact bench-test pump/nozzle/valve/sensor ratings for prototype procurement and validation.
+
 All listed features currently pass:
 
 - FEAT-001: project setup scaffold is passing.
 - FEAT-002: autonomous spraying and fertigation requirements are passing with deterministic route/spray/safety validation and lightweight mission contract simulation evidence.
+- FEAT-003: hardware BOM and Pixhawk/Raspberry Pi/pump/valve pinout are passing with deterministic BOM/pinout validation.
+- FEAT-004: bench-test pump/nozzle/valve/sensor ratings are passing with deterministic rating validation.
 
 The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation` and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
 
-Current git state at heartbeat: `## main...origin/main` with no working-tree changes before handoff/progress updates. GitHub CLI auth is available for account `alanworkliaolo`.
+Current git state at heartbeat: branch `feat/hardware-bom-pinout` is pushed to origin and PR #1 is open against `main`. Direct push to `main` is blocked by a repository rule requiring pull requests. GitHub CLI auth is available for account `alanworkliaolo`.
 
 ## Completed
 
@@ -33,6 +37,9 @@ Current git state at heartbeat: `## main...origin/main` with no working-tree cha
 - Cloned ArduPilot SITL under ignored path `simulation/ardupilot/`, installed prerequisites, built `bin/ardurover`, and proved headless simulator startup.
 - Added `scripts/simulate-mission-contract.py`, wired it into `scripts/check-gate.sh`, updated FEAT-002 verification to PASS, and marked FEAT-002 passing through `scripts/update-feature.py`.
 - Confirmed on 2026-07-22T03:34:55Z that the active gate passes and all features in `feature-list.json` are marked passing.
+- Pushed `feat/hardware-bom-pinout` to origin and opened PR #1: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/1. Direct `main` push is blocked by repository rules requiring PRs.
+- Added FEAT-004 bench-test hardware ratings: 12 V 5 L/min 60 PSI diaphragm pump, two 11002-class nozzles at 0.20 GPM/40 PSI, 12 V normally-closed valves, 0–1.2 MPa pressure sensing, low-liquid interlock, fused isolated drivers.
+- Added `hardware/bench-test-ratings.v0.json`, `docs/bench-test-hardware-selection.md`, `scripts/validate-bench-ratings.py`, wired it into `scripts/check-gate.sh`, and marked FEAT-004 passing through `scripts/update-feature.py`.
 
 ## Verification
 
@@ -63,14 +70,9 @@ CHECK_GATE_EXIT=0
 
 ## Next Step
 
-The feature queue is clear. Select the next feature to add to `feature-list.json`, recommended options:
-
-1. MAVLink / Mission Planner route export.
-2. Hardware BOM and Pixhawk/Raspberry Pi/pump/valve pinout.
-3. Physical prototype control code.
+Review/merge PR #1, then create the next feature for physical bench-test procedure: water-only leak/pressure/e-stop/catch-cup validation before chemical/fertilizer tests.
 
 ## Known Blockers
 
-- No active implementation blocker while the queue is clear.
-- Exact hardware selections and dimensions remain owner-confirmation items for later features.
+- Exact hardware selections and dimensions remain owner-confirmation items for bench/prototype procurement.
 - Exact dimensions, motor/steering design, pump/valve/nozzle details, low-liquid sensor, pressure sensor, and selected simulator still need owner confirmation before physical-build features.

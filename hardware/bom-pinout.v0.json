@@ -1,0 +1,46 @@
+{
+  "version": "0.1.0",
+  "feature_id": "FEAT-003",
+  "scope": "hardware reference only; no ArduRover firmware changes",
+  "controller_stack": {
+    "pixhawk": "Pixhawk 2.4.8 / PIX 32-bit APM-compatible flight controller running ArduRover",
+    "companion": "Raspberry Pi 4/5 or Pi Zero 2 W optional for logging/UI/network bridge; not required for Phase 1 firmware control",
+    "firmware_boundary": "Use stock ArduRover features, RC/manual override, relay/servo outputs, and mission commands; keep custom firmware out of FEAT-003"
+  },
+  "bom": [
+    { "category": "flight_controller", "item": "Pixhawk 2.4.8 or PIX 32-bit kit", "qty": 1, "purpose": "ArduRover controller, safety I/O, RC, telemetry, relay/servo outputs", "required": true },
+    { "category": "companion_computer", "item": "Raspberry Pi 4/5 or Pi Zero 2 W with buck supply", "qty": 1, "purpose": "Optional operator scripts/logging/camera later; not in control-critical power path", "required": false },
+    { "category": "telemetry", "item": "3DR-style 433/915 MHz SiK/LoRa telemetry radio pair", "qty": 1, "purpose": "Low-frequency field telemetry under wet canopy", "required": true },
+    { "category": "rc_control", "item": "RC receiver/transmitter with mode switch and kill/override channel", "qty": 1, "purpose": "Manual override and operator control priority", "required": true },
+    { "category": "rangefinder", "item": "JSN-SR04T waterproof ultrasonic modules or GY-US42 I2C alternatives", "qty": 3, "purpose": "Front obstacle plus left/right row reference sensing", "required": true },
+    { "category": "liquid_sensing", "item": "Tank float switch or non-contact liquid level sensor", "qty": 1, "purpose": "Low-liquid interlock; force pump/valves off", "required": true },
+    { "category": "pressure_sensing", "item": "0.5–1.2 MPa water pressure transducer or high/low pressure switch", "qty": 1, "purpose": "Detect dry-run, leak, blocked nozzle, or closed valve", "required": true },
+    { "category": "pump", "item": "12/24 V diaphragm pump sized to nozzle flow and pressure", "qty": 1, "purpose": "Spray/fertigation fluid delivery", "required": true },
+    { "category": "valves", "item": "12/24 V normally-closed solenoid valves, left and right", "qty": 2, "purpose": "Independent left/right spray zones", "required": true },
+    { "category": "actuator_drivers", "item": "MOSFET/relay driver board with flyback protection, opto-isolation preferred", "qty": 3, "purpose": "Pixhawk/RPi logic controls pump and valves without powering loads directly", "required": true },
+    { "category": "power", "item": "Main battery, fused distribution, 5.3 V Pi buck, 5 V Pixhawk BEC, pump/valve fused rail", "qty": 1, "purpose": "Separate noisy actuator power from avionics logic", "required": true },
+    { "category": "safety", "item": "Physical emergency stop cutting motor and pump/valve power independently of Pixhawk software", "qty": 1, "purpose": "Hardwired human safety cutoff", "required": true },
+    { "category": "spray_hardware", "item": "Nozzles, filters, tubing, check valves, pressure gauge, tank fittings", "qty": 1, "purpose": "Fluid path hardware", "required": true }
+  ],
+  "pinout": [
+    { "signal": "RC_INPUT", "connects_from": "RC receiver", "connects_to": "Pixhawk RC input", "voltage": "receiver-specific", "rule": "RC/manual override must remain available independent of companion computer" },
+    { "signal": "TELEM1", "connects_from": "433/915 MHz telemetry radio", "connects_to": "Pixhawk TELEM1", "voltage": "5 V TTL/UART per module", "rule": "Mission Planner/QGC telemetry; keep antenna clear of pump wiring" },
+    { "signal": "I2C_GPS_COMPASS", "connects_from": "GPS/compass/RTK module", "connects_to": "Pixhawk GPS/I2C ports", "voltage": "Pixhawk-compatible", "rule": "Required for outdoor row entry; do not commit real farm coordinates" },
+    { "signal": "RANGE_FRONT", "connects_from": "front ultrasonic sensor", "connects_to": "Pixhawk AUX/analog/I2C via compatible interface", "voltage": "level shifted if needed", "rule": "Obstacle fault -> HOLD/stop and spray OFF" },
+    { "signal": "RANGE_LEFT", "connects_from": "left ultrasonic sensor", "connects_to": "Pixhawk AUX/analog/I2C via compatible interface", "voltage": "level shifted if needed", "rule": "Row reference only; invalid readings must slow/stop, never steer into beds" },
+    { "signal": "RANGE_RIGHT", "connects_from": "right ultrasonic sensor", "connects_to": "Pixhawk AUX/analog/I2C via compatible interface", "voltage": "level shifted if needed", "rule": "Row reference only; invalid readings must slow/stop, never steer into beds" },
+    { "signal": "PUMP_ENABLE", "connects_from": "Pixhawk relay/servo output", "connects_to": "external MOSFET/relay driver input", "voltage": "signal only", "rule": "Never drive pump directly from Pixhawk; fault override OFF" },
+    { "signal": "LEFT_VALVE_ENABLE", "connects_from": "Pixhawk relay/servo output", "connects_to": "external MOSFET/relay driver input", "voltage": "signal only", "rule": "Normally closed valve; OFF on transit/fault" },
+    { "signal": "RIGHT_VALVE_ENABLE", "connects_from": "Pixhawk relay/servo output", "connects_to": "external MOSFET/relay driver input", "voltage": "signal only", "rule": "Normally closed valve; OFF on transit/fault" },
+    { "signal": "LOW_LIQUID", "connects_from": "tank level sensor", "connects_to": "Pixhawk digital/analog input or companion GPIO with failsafe relay", "voltage": "level shifted if needed", "rule": "Low liquid -> pump and valves OFF; no automatic resume" },
+    { "signal": "PRESSURE_SENSOR", "connects_from": "pressure transducer/switch", "connects_to": "Pixhawk analog input or companion ADC", "voltage": "0-3.3/5 V scaled safely", "rule": "Low/high pressure -> pump and valves OFF" },
+    { "signal": "ESTOP_POWER_CUT", "connects_from": "physical E-stop", "connects_to": "motor controller and pump/valve power rail", "voltage": "battery rail", "rule": "Must cut actuator power independent of Pixhawk/RPi software" },
+    { "signal": "PI_LINK_OPTIONAL", "connects_from": "Raspberry Pi UART/USB", "connects_to": "Pixhawk TELEM2/USB", "voltage": "USB/3.3 V UART", "rule": "Optional companion link; not required for Phase 1 safety control" }
+  ],
+  "forbidden": [
+    "directly powering pump or solenoid valves from Pixhawk GPIO/servo pins",
+    "depending on Raspberry Pi software for emergency stop",
+    "committing real farm coordinates or credentials",
+    "changing ArduRover firmware for FEAT-003"
+  ]
+}

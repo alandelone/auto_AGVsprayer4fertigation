@@ -1,7 +1,7 @@
 {
   "project": "auto_AGVsprayer4fertigation",
   "version": "0.1.0",
-  "active_feature": "FEAT-002",
+  "active_feature": "FEAT-004",
   "features": [
     {
       "id": "FEAT-001",
@@ -15,6 +15,20 @@
       "module": "AGV Sprayer",
       "title": "Define autonomous spraying and fertigation requirements",
       "context": "Capture hardware, routing, safety, sensor, and dosing constraints before coding.",
+      "passes": true
+    },
+    {
+      "id": "FEAT-003",
+      "module": "Hardware Integration",
+      "title": "Define hardware BOM and Pixhawk/Raspberry Pi/pump/valve pinout",
+      "context": "Create a non-firmware hardware integration reference for prototype purchasing, wiring, power isolation, and field-safe actuator control.",
+      "passes": true
+    },
+    {
+      "id": "FEAT-004",
+      "module": "Bench Prototype",
+      "title": "Select exact bench-test pump, nozzle, valve, and sensor ratings",
+      "context": "Turn FEAT-003 generic hardware interfaces into concrete safe bench-test ratings for prototype procurement and validation.",
       "passes": true
     }
   ]
