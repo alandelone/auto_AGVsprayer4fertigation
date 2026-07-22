@@ -1,0 +1,81 @@
+{
+  "version": "0.1.0",
+  "feature_id": "FEAT-005",
+  "scope": "water-only bench validation before fertilizer or chemical tests",
+  "required_equipment": [
+    "clean water tank",
+    "12 V fused actuator supply",
+    "physical emergency stop",
+    "pump and two normally-closed valves",
+    "two 11002-class flat-fan nozzles",
+    "0-1.2 MPa pressure sensor or gauge",
+    "low-liquid sensor/interlock",
+    "two graduated catch cups or measuring cylinders",
+    "absorbent pads/towels and eye protection"
+  ],
+  "preconditions": [
+    "Use water only; no fertilizer or chemical concentrate.",
+    "Pixhawk/Raspberry Pi logic power is separate from pump/valve actuator rail.",
+    "Pump and valves are fused and flyback-protected.",
+    "E-stop physically cuts actuator power independent of software.",
+    "Low liquid interlock and pressure interlock or gauge are wired or simulated before spray tests.",
+    "Tank outlet filter is installed before pump inlet."
+  ],
+  "tests": [
+    {
+      "id": "T01_DRY_POWER_OFF",
+      "title": "Dry wiring inspection with actuator power off",
+      "method": "Inspect polarity, fuses, grounds, driver inputs, flyback protection, valve labels, and hose clamps before applying actuator power.",
+      "acceptance": "No loose conductors, no direct Pixhawk-to-load wiring, all actuator loads fused, pump/valves default off."
+    },
+    {
+      "id": "T02_ESTOP_CUT",
+      "title": "Emergency stop cuts actuator rail",
+      "method": "Enable actuator supply with pump/valves commanded off, press E-stop, then command pump/valves on from controller or test harness.",
+      "acceptance": "Pump and valves remain off while E-stop is latched; reset requires manual operator action."
+    },
+    {
+      "id": "T03_PRIME_LEAK",
+      "title": "Prime and leak check",
+      "method": "Fill tank with clean water, open safe drain/return path, run pump in short pulses below 40 PSI, inspect all fittings.",
+      "acceptance": "No visible leaks, no hose movement, no pump dry-run, pressure rises smoothly."
+    },
+    {
+      "id": "T04_PRESSURE_LIMITS",
+      "title": "Pressure low/high trip behavior",
+      "method": "Verify low pressure below 15 PSI and high pressure above 70 PSI trigger pump/valve off state using sensor/gauge or adjustable bypass.",
+      "acceptance": "Fault forces pump off and both valves closed; automatic resume is disabled."
+    },
+    {
+      "id": "T05_LOW_LIQUID",
+      "title": "Low-liquid interlock",
+      "method": "Simulate low-liquid switch or reduce water to threshold while pump command is enabled.",
+      "acceptance": "Pump and valves shut off; operator reset is required after refill."
+    },
+    {
+      "id": "T06_ZONE_VALVES",
+      "title": "Left/right zone isolation",
+      "method": "At 40 PSI, command LEFT, RIGHT, BOTH, and OFF states while observing nozzle output.",
+      "acceptance": "LEFT sprays only left nozzle; RIGHT sprays only right nozzle; BOTH sprays both; OFF sprays none."
+    },
+    {
+      "id": "T07_CATCH_CUP_FLOW",
+      "title": "Catch-cup flow sanity check",
+      "method": "At 40 PSI, collect each nozzle output for 60 seconds into separate measuring cups.",
+      "acceptance": "Each 11002-class nozzle measures 0.60-0.90 L/min and left/right difference is <=20%."
+    },
+    {
+      "id": "T08_FAULT_SAFE_STATE",
+      "title": "Fault safe output state",
+      "method": "During LEFT or BOTH spray, trigger E-stop, low-liquid, and pressure fault one at a time.",
+      "acceptance": "Every fault state results in pump off, left valve closed, right valve closed, and operator review required."
+    }
+  ],
+  "pass_rule": "All tests must be PASS in bench-test-log.template.json before any fertilizer or chemical test.",
+  "forbidden": [
+    "testing with fertilizer or pesticide before water-only PASS",
+    "bypassing E-stop or low-liquid interlock to complete a test",
+    "running pump dry for troubleshooting",
+    "standing in spray fan during pressure or catch-cup tests"
+  ]
+}
