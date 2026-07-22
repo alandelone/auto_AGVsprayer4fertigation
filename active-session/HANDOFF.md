@@ -14,7 +14,7 @@ All listed features currently pass:
 
 The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation` and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
 
-Current git state at heartbeat: `## main...origin/main` with no working-tree changes before handoff/progress updates. GitHub CLI auth is available for account `alanworkliaolo`.
+Current git state at heartbeat: branch `feat/hardware-bom-pinout` is pushed to origin and PR #1 is open against `main`. Direct push to `main` is blocked by a repository rule requiring pull requests. GitHub CLI auth is available for account `alanworkliaolo`.
 
 ## Completed
 
@@ -36,6 +36,7 @@ Current git state at heartbeat: `## main...origin/main` with no working-tree cha
 - Cloned ArduPilot SITL under ignored path `simulation/ardupilot/`, installed prerequisites, built `bin/ardurover`, and proved headless simulator startup.
 - Added `scripts/simulate-mission-contract.py`, wired it into `scripts/check-gate.sh`, updated FEAT-002 verification to PASS, and marked FEAT-002 passing through `scripts/update-feature.py`.
 - Confirmed on 2026-07-22T03:34:55Z that the active gate passes and all features in `feature-list.json` are marked passing.
+- Pushed `feat/hardware-bom-pinout` to origin and opened PR #1: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/1. Direct `main` push is blocked by repository rules requiring PRs.
 
 ## Verification
 

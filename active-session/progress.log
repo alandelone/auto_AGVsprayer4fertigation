@@ -14,3 +14,4 @@
 2026-07-22 Added lightweight mission contract simulator, wired it into check-gate, and updated FEAT-002 verification evidence to PASS.
 2026-07-22T03:34:55Z Heartbeat: read hot context, verified git/GitHub auth, ran init + check-gate successfully; all features in feature-list.json are passing, so no implementation work was invented.
 2026-07-22 Created FEAT-003 hardware BOM/pinout branch, ignored MAVLink export, excluded ArduRover firmware changes, validated gate, and marked FEAT-003 passing.
+2026-07-22T05:45:20Z Verified active gate, attempted direct main push, hit repository PR-only rule, and opened PR #1 from feat/hardware-bom-pinout to main.
