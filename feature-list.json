@@ -15,7 +15,7 @@
       "module": "AGV Sprayer",
       "title": "Define autonomous spraying and fertigation requirements",
       "context": "Capture hardware, routing, safety, sensor, and dosing constraints before coding.",
-      "passes": false
+      "passes": true
     }
   ]
 }

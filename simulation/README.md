@@ -80,6 +80,17 @@ ARDUROVER_EXIT=124
 
 `ARDUROVER_EXIT=124` is expected for this proof because `timeout` stopped the long-running simulator after startup was confirmed.
 
+
+## Lightweight Mission Contract Simulator
+
+The repository also includes a deterministic mission-level harness that proves the required FEAT-002 route/spray/fault behavior without hardware dynamics:
+
+```bash
+python scripts/simulate-mission-contract.py
+```
+
+It verifies row entry safe/off, in-row spray output enablement, spray transition off before row exit, mission-end safe/off, and a `front_obstacle` fault forcing HOLD + all spray outputs off.
+
 ## Repository Rule
 
 Do not commit the full ArduPilot source tree, build outputs, real farm coordinates, telemetry credentials, or hardware secrets into this repository.

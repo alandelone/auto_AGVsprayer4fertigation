@@ -9,3 +9,7 @@ python "$ROOT_DIR/scripts/update-feature.py" --check-only "$FEATURE_FILE"
 if [[ -x "$ROOT_DIR/scripts/validate-contracts.py" ]]; then
   python "$ROOT_DIR/scripts/validate-contracts.py"
 fi
+
+if [[ -x "$ROOT_DIR/scripts/simulate-mission-contract.py" ]]; then
+  python "$ROOT_DIR/scripts/simulate-mission-contract.py"
+fi

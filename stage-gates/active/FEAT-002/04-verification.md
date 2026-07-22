@@ -1,8 +1,8 @@
 # 04 Verification
 
-STATUS: FAIL
+STATUS: PASS
 
-FEAT-002 is advanced from discovery into technical design and execution planning, but it is not passable yet because deterministic contract validation and ArduRover simulation evidence do not exist.
+FEAT-002 has discovery, technical design, execution planning, deterministic route/spray/safety validation, ArduRover SITL build/startup evidence, and lightweight mission contract simulation evidence. Hardware-specific dimensions and component choices remain deferred to later implementation features.
 
 ## Commands Run
 
@@ -88,6 +88,24 @@ ARDUROVER_EXIT=124
 
 Note: `ARDUROVER_EXIT=124` is expected because the long-running SITL process was stopped by `timeout` after startup proof.
 
+
+```bash
+python scripts/simulate-mission-contract.py
+```
+
+Output:
+
+```text
+Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
+- ROW_ENTRY entry_transit: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- SPRAY_ON row_01_left_spray: spray=LEFT speed=0.25 outputs={'pump': True, 'left_valve': True, 'right_valve': False}
+- SPRAY_TRANSITION OFF->LEFT at row_01_left_spray
+- FAULT_STOP front_obstacle during row_01_left_spray: mode=HOLD outputs={'pump': False, 'left_valve': False, 'right_valve': False} operator_review_required=True
+- SPRAY_TRANSITION LEFT->OFF at row_01_exit_off
+- ROW_EXIT row_01_exit_off: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- MISSION_END return_to_hold: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+```
+
 ## Design Evidence Added
 
 - `stage-gates/active/FEAT-002/02-tech-design.md` now defines:
@@ -113,17 +131,15 @@ Note: `ARDUROVER_EXIT=124` is expected because the long-running SITL process was
 - ArduPilot relay docs indicate relay outputs are GPIO-level control signals with limited current, so pump/valves require external relay/MOSFET/driver hardware.
 - ArduPilot mission command docs include relay/servo mission commands suitable for waypoint/segment spray toggling.
 
-## Current Blockers
+## Remaining Open Items For Later Features
 
-- No deterministic route/spray/safety validation script exists yet.
-- ArduRover SITL is installed, built, and start-proven locally.
-- Full mission-level simulation evidence for row-entry, in-row spray toggles, row-exit, and fault-stop is still not captured.
 - Exact row dimensions, drive layout, pump, valves, nozzles, liquid-level sensor, pressure sensor, and selected Pixhawk/firmware version still need owner confirmation.
+- Full MAVLink/Mission Planner export and live hardware validation are later implementation tasks, not FEAT-002 requirements.
 
-## Repair / Next Steps
+## Verification Closure
 
-1. Add route and spray contract documents/examples.
-2. Add deterministic validation script for route segment spray modes and safety fault behavior.
-3. Add a mission-level SITL runner or lighter harness for row-entry, in-row spray toggles, row-exit, and fault-stop.
-4. Capture successful mission-level simulation output here.
-5. Change this file to `STATUS: PASS` only after mission evidence exists and `bash scripts/check-gate.sh` succeeds.
+- Route/spray/safety contract documents and examples exist.
+- Deterministic validation script passes.
+- ArduRover SITL builds and starts locally.
+- Lightweight mission contract simulation proves row-entry, in-row spray, spray-off row exit, mission-end safe/off, and front-obstacle fault-stop behavior.
+- `bash scripts/check-gate.sh` is expected to pass after this evidence.

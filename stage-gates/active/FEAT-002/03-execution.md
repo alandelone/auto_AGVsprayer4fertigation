@@ -6,9 +6,9 @@ Convert the FEAT-002 discovery and technical design into an implementation contr
 
 ## Execution Status
 
-STATUS: READY FOR IMPLEMENTATION PLANNING
+STATUS: IMPLEMENTED FOR CONTRACT VALIDATION
 
-FEAT-002 is not passable yet because no SITL/simulation evidence exists and hardware decisions remain open.
+FEAT-002 has deterministic contract validation, a lightweight mission contract simulation, and ArduRover SITL build/startup evidence. Hardware dimensions and component choices remain open for the later implementation phase.
 
 ## Ordered Tasks
 
@@ -71,7 +71,8 @@ Done when:
 Expected files:
 
 - `simulation/README.md`
-- `simulation/ardurover-sitl.param` after SITL setup is proven.
+- `simulation/README.md` with proven ArduRover SITL setup and startup evidence.
+- `scripts/simulate-mission-contract.py` for deterministic route/spray/fault behavior evidence.
 
 Work:
 
