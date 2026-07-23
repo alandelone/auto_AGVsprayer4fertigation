@@ -4,11 +4,11 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-`FEAT-007` is now active on branch `main` and is intentionally FAILING: stage-gate contracts exist, but Mission Planner / QGC export implementation and verification evidence have not been added yet.
+`FEAT-007` is active on branch `main` and still intentionally FAILING: stage-gate contracts exist and the mission source contract is now implemented, but exporter/validator/generated mission artifacts and verification evidence have not been added yet.
 
 Features status:
 - FEAT-001 through FEAT-006: PASSING.
-- FEAT-007: ACTIVE / stage-gated / failing until implementation evidence is captured.
+- FEAT-007: ACTIVE / stage-gated / partially implemented / failing until exporter, validator, generated artifacts, and PASS evidence are captured.
 - FEAT-008 through FEAT-010: PLANNED (SITL preflight & dosing, SITL dead reckoning & position gate, SITL fault recovery & telemetry logging).
 
 ## Key Goal Clarification
@@ -24,11 +24,12 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
   - `stage-gates/active/FEAT-007/03-execution.md`
   - `stage-gates/active/FEAT-007/04-verification.md`
 - FEAT-007 verification gate is deliberately `STATUS: FAIL` until exporter/validator artifacts exist and actual command output is pasted.
+- 2026-07-23T20:10:14Z heartbeat: created `missions/cucumber-row-mission.v0.json`, a deterministic synthetic mission source contract with 7 ordered mission items, 4 actuator transitions, synthetic-only coordinates, and FEAT-006 pump/relay command references.
 
 ## Latest Verification Commands
 
 ```bash
-git rev-parse --show-toplevel && git status --short --branch && git branch --show-current && git remote -v && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+git rev-parse --show-toplevel && git status --short --branch && git branch --show-current && git remote -v && gh auth status
 ```
 
 Output:
@@ -39,34 +40,62 @@ Output:
 main
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
-Initializing auto_AGVsprayer4fertigation workspace...
-No build or test toolchain is configured yet.
-Add setup commands here when source code is introduced.
-Gate check passed
-Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
-Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
-- ROW_ENTRY entry_transit: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
-- SPRAY_ON row_01_left_spray: spray=LEFT speed=0.25 outputs={'pump': True, 'left_valve': True, 'right_valve': False}
-- SPRAY_TRANSITION OFF->LEFT at row_01_left_spray
-- FAULT_STOP front_obstacle during row_01_left_spray: mode=HOLD outputs={'pump': False, 'left_valve': False, 'right_valve': False} operator_review_required=True
-- SPRAY_TRANSITION LEFT->OFF at row_01_exit_off
-- ROW_EXIT row_01_exit_off: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
-- MISSION_END return_to_hold: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
-Validated hardware BOM/pinout contract: hardware/bom-pinout.v0.json
-Validated bench ratings contract: hardware/bench-test-ratings.v0.json margin=3.3x
-Validated bench procedure contract: hardware/bench-test-procedure.v0.json tests=8
-Validated Pixhawk actuator mapping: hardware/pixhawk-actuator-mapping.v0.json
-Validated ArduRover parameter export: hardware/pixhawk-ardurover-sprayer.param
-ACTUATOR_OUTPUTS=AUX1,AUX2,AUX3,AUX4,AUX5
-PARAMETERS=BRD_PWM_COUNT,SERVO9_FUNCTION,SERVO9_MIN,SERVO9_MAX,RELAY1_PIN,RELAY1_DEFAULT,RELAY2_PIN,RELAY2_DEFAULT,RELAY3_PIN,RELAY3_DEFAULT,RELAY4_PIN,RELAY4_DEFAULT
-CHECK_GATE_EXIT=0
+github.com
+  ✓ Logged in to github.com account alanworkliaolo (/home/ubuntu/.hermes/profiles/evergreen4bot/home/.config/gh/hosts.yml)
+  - Active account: true
+  - Git operations protocol: https
+  - Token: gho_************************************
+  - Token scopes: 'gist', 'read:org', 'repo'
 ```
 
 ```bash
 bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output after activating FEAT-007:
+Output before this progress step:
+
+```text
+Initializing auto_AGVsprayer4fertigation workspace...
+No build or test toolchain is configured yet.
+Add setup commands here when source code is introduced.
+FAIL: verification gate status must be PASS
+CHECK_GATE_EXIT=1
+```
+
+```bash
+python -m json.tool missions/cucumber-row-mission.v0.json >/tmp/feat007-mission-jsoncheck.out && python - <<'PY'
+import json
+from pathlib import Path
+path = Path('missions/cucumber-row-mission.v0.json')
+data = json.loads(path.read_text())
+assert data['feature_id'] == 'FEAT-007'
+items = data['mission_items']
+seqs = [item['seq'] for item in items]
+assert seqs == list(range(len(items))), seqs
+states = {item['spray_state'] for item in items}
+assert {'OFF', 'LEFT'} <= states, states
+transitions = data['actuator_transitions']
+assert transitions[0]['spray_state'] == 'OFF'
+assert any(t['spray_state'] == 'LEFT' for t in transitions)
+assert transitions[-1]['spray_state'] == 'OFF'
+assert data['actuator_commands']['pump_pwm']['servo_channel'] == 9
+assert data['actuator_commands']['left_spray_valve']['relay_number'] == 1
+assert data['actuator_commands']['right_spray_valve']['relay_number'] == 2
+print(f"MISSION_CONTRACT_OK path={path} items={len(items)} transitions={len(transitions)} states={','.join(sorted(states))}")
+PY
+```
+
+Output:
+
+```text
+MISSION_CONTRACT_OK path=missions/cucumber-row-mission.v0.json items=7 transitions=4 states=LEFT,OFF
+```
+
+```bash
+bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+```
+
+Output after this progress step:
 
 ```text
 Initializing auto_AGVsprayer4fertigation workspace...
@@ -78,8 +107,12 @@ CHECK_GATE_EXIT=1
 
 ## Current Blocker
 
-FEAT-007 needs implementation. The active gate fails because `stage-gates/active/FEAT-007/04-verification.md` is `STATUS: FAIL` and no mission exporter/validator evidence exists yet.
+FEAT-007 still needs implementation components 2 and 3. The active gate fails because `stage-gates/active/FEAT-007/04-verification.md` is `STATUS: FAIL` and no exporter, validator, generated `.plan`, generated `.waypoints`, or actual PASS evidence exists yet.
 
 ## Next Concrete Step
 
-Implement FEAT-007 component 1: create `missions/cucumber-row-mission.v0.json` with deterministic synthetic route points, row labels, target speeds, spray states, and actuator transition points aligned with FEAT-006 pump/relay mapping. After creation, run a structural JSON check and append a `REVIEW FEAT-007 mission source contract: PASS|FAIL ...` line to `active-session/progress.log`.
+Implement FEAT-007 component 2: create `scripts/export-mission-files.py` to read `missions/cucumber-row-mission.v0.json` plus `hardware/pixhawk-actuator-mapping.v0.json`, then deterministically write:
+- `missions/exports/cucumber-row-mission.plan`
+- `missions/exports/cucumber-row-mission.waypoints`
+
+After creation, run the exporter, inspect/generated-file parse checks, and append `REVIEW FEAT-007 exporter: PASS|FAIL ...` to `active-session/progress.log`.
