@@ -1,0 +1,112 @@
+{
+  "version": "0.1.0",
+  "feature_id": "FEAT-006",
+  "scope": "bench prototype procurement checklist; no supplier checkout or farm-private data",
+  "currency": "owner-selected",
+  "must_confirm_before_purchase": [
+    "shipping country and local voltage/connector availability",
+    "pump chemical compatibility for future fertilizer only after water tests pass",
+    "hose inner diameter matching pump, filter, valves, and nozzle holders",
+    "Pixhawk-compatible sensor interface voltage before wiring",
+    "actual frame/tank mounting dimensions"
+  ],
+  "items": [
+    {
+      "id": "P01_PUMP",
+      "category": "spray_power",
+      "description": "12 V DC diaphragm sprayer pump with pressure switch",
+      "qty": 1,
+      "required": true,
+      "must_have_specs": [">=5 L/min flow", ">=60 PSI pressure", "<=8 A expected running current", "self-priming", "barbed/threaded ports match selected hose"],
+      "preferred_specs": ["spare diaphragm kit available", "integrated pressure switch", "mounting rubber feet"],
+      "reject_if": ["unrated pressure", "no current rating", "cannot run water", "requires AC mains"]
+    },
+    {
+      "id": "P02_NOZZLES",
+      "category": "spray_output",
+      "description": "11002-class 110-degree flat-fan agricultural spray tips plus caps/holders",
+      "qty": 2,
+      "required": true,
+      "must_have_specs": ["0.20 GPM at 40 PSI class", "110 degree flat fan", "compatible cap/holder included or purchased separately"],
+      "preferred_specs": ["buy spare 110015 and 11003 sizes", "reputable agricultural nozzle brand"],
+      "reject_if": ["mist nozzle without flow chart", "unknown spray angle", "no compatible holder"]
+    },
+    {
+      "id": "P03_VALVES",
+      "category": "spray_control",
+      "description": "12 V normally-closed solenoid valves for left/right zones",
+      "qty": 2,
+      "required": true,
+      "must_have_specs": ["normally closed", ">=100 PSI pressure rating", ">=4 mm orifice", "water compatible", "<=1 A design current each"],
+      "preferred_specs": ["manual flow arrow marked", "spare seals available"],
+      "reject_if": ["normally open", "plastic body not pressure rated", "unknown voltage"]
+    },
+    {
+      "id": "P04_DRIVER_BOARD",
+      "category": "electrical_control",
+      "description": "opto-isolated MOSFET or relay driver board with flyback protection",
+      "qty": 1,
+      "required": true,
+      "must_have_specs": [">=3 channels", ">=10 A pump channel", "12 V load support", "logic input compatible with controller", "flyback protection or diode plan"],
+      "preferred_specs": ["screw terminals", "status LEDs", "replaceable fuse per channel"],
+      "reject_if": ["bare GPIO module", "no load current rating", "no inductive-load protection"]
+    },
+    {
+      "id": "P05_PRESSURE_SENSOR",
+      "category": "safety_sensing",
+      "description": "water pressure transducer or high/low pressure switch",
+      "qty": 1,
+      "required": true,
+      "must_have_specs": ["0-1.2 MPa range or equivalent", "water compatible thread", "output readable by Pixhawk/RPi through safe ADC/interface"],
+      "preferred_specs": ["0.5-4.5 V output", "stainless wetted parts", "include matching adapter"],
+      "reject_if": ["range below 70 PSI", "unknown output voltage", "no thread specification"]
+    },
+    {
+      "id": "P06_LOW_LIQUID",
+      "category": "safety_sensing",
+      "description": "tank float switch or non-contact liquid level sensor",
+      "qty": 1,
+      "required": true,
+      "must_have_specs": ["water compatible", "mountable in tank", "fails safe to pump-off interlock", "manual reset workflow possible"],
+      "preferred_specs": ["normally-closed safety loop option", "sealed cable"],
+      "reject_if": ["cannot tolerate water/fertilizer tank", "unknown contact rating"]
+    },
+    {
+      "id": "P07_ESTOP_POWER",
+      "category": "safety_power",
+      "description": "physical emergency stop, fuse holders, 12 V distribution, wire, terminals, waterproof connectors",
+      "qty": 1,
+      "required": true,
+      "must_have_specs": ["E-stop cuts actuator rail", "10 A pump fuse", "3 A valve fuse", "wire gauge sized for pump current", "separate logic supply path"],
+      "preferred_specs": ["DIN/fused terminal block", "waterproof inline connectors", "heat-shrink labels"],
+      "reject_if": ["software-only kill", "unfused pump rail", "shared noisy actuator power with Pixhawk logic"]
+    },
+    {
+      "id": "P08_FLUID_PATH",
+      "category": "plumbing",
+      "description": "tank fittings, suction filter, pressure gauge, tubing, clamps, check valves, tee fittings, nozzle holders",
+      "qty": 1,
+      "required": true,
+      "must_have_specs": ["pressure gauge covers 0-100 PSI", "filter before pump", "hose and clamps match all ports", "check valves or anti-drip plan"],
+      "preferred_specs": ["transparent test tubing for bench only", "spare clamps and adapters"],
+      "reject_if": ["hose pressure rating below 70 PSI", "missing filter", "unknown fitting sizes"]
+    },
+    {
+      "id": "P09_CONTROLLER_TELEMETRY",
+      "category": "control_stack",
+      "description": "Pixhawk kit, RC override, telemetry radio, GPS/compass, optional Raspberry Pi supply",
+      "qty": 1,
+      "required": true,
+      "must_have_specs": ["Pixhawk-compatible ArduRover controller", "RC manual override path", "telemetry radio pair", "GPS/compass module", "logic BEC/buck supply separate from actuator rail"],
+      "preferred_specs": ["spare servo cables", "case or vibration mount"],
+      "reject_if": ["no manual override", "unknown firmware compatibility", "requires farm credentials to test"]
+    }
+  ],
+  "inspection_rule": "Every required item must have must_have_specs and reject_if criteria checked before purchase.",
+  "forbidden": [
+    "recording real farm coordinates or private supplier account data in the repo",
+    "buying chemical/fertilizer before water-only bench PASS",
+    "accepting software-only emergency stop",
+    "purchasing actuator loads that would be powered directly from Pixhawk pins"
+  ]
+}

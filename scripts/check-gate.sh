@@ -25,3 +25,7 @@ fi
 if [[ -x "$ROOT_DIR/scripts/validate-bench-procedure.py" ]]; then
   python "$ROOT_DIR/scripts/validate-bench-procedure.py"
 fi
+
+if [[ -x "$ROOT_DIR/scripts/validate-procurement-checklist.py" ]]; then
+  python "$ROOT_DIR/scripts/validate-procurement-checklist.py"
+fi

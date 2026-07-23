@@ -4,7 +4,7 @@
 
 Repository memory scaffold uses the newer SSOT design. `feature-list.json` owns `active_feature`; `mission_status.json` has been removed.
 
-FEAT-005 is active on branch `feat/bench-test-procedure`: water-only bench-test procedure and acceptance log for leak, pressure, e-stop, low-liquid, zone-valve, catch-cup, and fault-safe checks before chemical/fertilizer tests.
+FEAT-006 is active on branch `feat/procurement-checklist`: bench prototype procurement checklist with buy list, must-have specs, reject criteria, receiving inspection, and private-data rules.
 
 All listed features currently pass:
 
@@ -13,10 +13,11 @@ All listed features currently pass:
 - FEAT-003: hardware BOM and Pixhawk/Raspberry Pi/pump/valve pinout are passing with deterministic BOM/pinout validation.
 - FEAT-004: bench-test pump/nozzle/valve/sensor ratings are passing with deterministic rating validation.
 - FEAT-005: water-only bench-test procedure and log template are passing with deterministic procedure validation.
+- FEAT-006: bench prototype procurement checklist is passing with deterministic procurement validation.
 
 The repository is cloned at `/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation` and `origin` points to `https://github.com/alandelone/auto_AGVsprayer4fertigation.git`.
 
-Current git state at heartbeat: PR #1 has been merged to `origin/main`; local `main` was reset to `origin/main` with user approval after squash-merge divergence. Current work is on branch `feat/bench-test-procedure`. GitHub CLI auth is available for account `alanworkliaolo`.
+Current git state at heartbeat 2026-07-23T04:55:02Z: working tree was clean before this handoff/progress update on branch `feat/procurement-checklist` tracking `origin/feat/procurement-checklist`. GitHub CLI auth has previously been available for account `alanworkliaolo`.
 
 ## Completed
 
@@ -42,6 +43,7 @@ Current git state at heartbeat: PR #1 has been merged to `origin/main`; local `m
 - Added FEAT-004 bench-test hardware ratings: 12 V 5 L/min 60 PSI diaphragm pump, two 11002-class nozzles at 0.20 GPM/40 PSI, 12 V normally-closed valves, 0–1.2 MPa pressure sensing, low-liquid interlock, fused isolated drivers.
 - Added `hardware/bench-test-ratings.v0.json`, `docs/bench-test-hardware-selection.md`, `scripts/validate-bench-ratings.py`, wired it into `scripts/check-gate.sh`, and marked FEAT-004 passing through `scripts/update-feature.py`.
 - Added FEAT-005 water-only bench-test procedure contract, human procedure doc, log template, deterministic validator, and marked FEAT-005 passing through `scripts/update-feature.py`.
+- Merged PR #2 and added FEAT-006 bench prototype procurement checklist, human buy list, receiving inspection template, deterministic validator, and marked FEAT-006 passing through `scripts/update-feature.py`.
 
 ## Verification
 
@@ -49,30 +51,41 @@ Latest command run:
 
 ```bash
 git status --short --branch && \
+printf '\nTOPLEVEL\n' && git rev-parse --show-toplevel && \
 printf '\nREMOTES\n' && git remote -v && \
-printf '\nBRANCH\n' && git branch --show-current && \
-printf '\nGH_AUTH\n' && gh auth status 2>&1 || true
-printf '\nGATE\n'
-bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+printf '\nGATE\n' && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
 Result summary:
 
 ```text
-## main...origin/main
+## feat/procurement-checklist...origin/feat/procurement-checklist
+TOPLEVEL /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
-main
-gh auth: logged in to github.com account alanworkliaolo
+Initializing auto_AGVsprayer4fertigation workspace...
+No build or test toolchain is configured yet.
+Add setup commands here when source code is introduced.
 Gate check passed
 Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
 Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
+- ROW_ENTRY entry_transit: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- SPRAY_ON row_01_left_spray: spray=LEFT speed=0.25 outputs={'pump': True, 'left_valve': True, 'right_valve': False}
+- SPRAY_TRANSITION OFF->LEFT at row_01_left_spray
+- FAULT_STOP front_obstacle during row_01_left_spray: mode=HOLD outputs={'pump': False, 'left_valve': False, 'right_valve': False} operator_review_required=True
+- SPRAY_TRANSITION LEFT->OFF at row_01_exit_off
+- ROW_EXIT row_01_exit_off: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- MISSION_END return_to_hold: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+Validated hardware BOM/pinout contract: hardware/bom-pinout.v0.json
+Validated bench ratings contract: hardware/bench-test-ratings.v0.json margin=3.3x
+Validated bench procedure contract: hardware/bench-test-procedure.v0.json tests=8
+Validated procurement checklist: hardware/procurement-checklist.v0.json items=9
 CHECK_GATE_EXIT=0
 ```
 
 ## Next Step
 
-Review/merge FEAT-005, then create the next feature for a physical procurement checklist or bench wiring diagram package.
+Queue is clear: all features in `feature-list.json` pass. Recommended next feature options: MAVLink/Mission Planner export, hardware BOM/pinout follow-up / bench wiring diagram package, or physical prototype control code.
 
 ## Known Blockers
 
