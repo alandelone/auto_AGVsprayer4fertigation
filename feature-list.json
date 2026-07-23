@@ -1,7 +1,7 @@
 {
   "project": "auto_AGVsprayer4fertigation",
   "version": "0.1.0",
-  "active_feature": "FEAT-006",
+  "active_feature": "FEAT-007",
   "features": [
     {
       "id": "FEAT-001",
