@@ -1,7 +1,7 @@
 {
   "project": "auto_AGVsprayer4fertigation",
   "version": "0.1.0",
-  "active_feature": "FEAT-005",
+  "active_feature": "FEAT-006",
   "features": [
     {
       "id": "FEAT-001",
@@ -37,6 +37,41 @@
       "title": "Define water-only bench-test procedure and acceptance log",
       "context": "Create a deterministic, safe bench procedure for leak, pressure, e-stop, low-liquid, valve-zone, and nozzle catch-cup checks before chemical/fertilizer tests.",
       "passes": true
+    },
+    {
+      "id": "FEAT-006",
+      "module": "Pixhawk Firmware & Parameters",
+      "title": "Configure ArduRover Pixhawk actuator mapping and export parameter file",
+      "context": "Map AUX1-AUX5 (SERVO9-SERVO13, RELAY1-RELAY4) to pump PWM, spray valves, agitation, and E-stop cutoff; generate production-ready pixhawk-ardurover-sprayer.param.",
+      "passes": false
+    },
+    {
+      "id": "FEAT-007",
+      "module": "MAVLink & Mission Planner",
+      "title": "Generate Mission Planner / QGC waypoint files (.plan and .waypoints)",
+      "context": "Convert cucumber row spray routes into QGroundControl .plan and ArduPilot WPL 110 .waypoints files with embedded DO_SET_SERVO and DO_SET_RELAY spray triggers.",
+      "passes": false
+    },
+    {
+      "id": "FEAT-008",
+      "module": "SITL Simulation & Preflight",
+      "title": "Implement ArduRover SITL preflight gate and dosing calibration script",
+      "context": "Develop ArduRover SITL / companion control logic to enforce preflight sensor checks and speed-synchronized dosing before mission execution.",
+      "passes": false
+    },
+    {
+      "id": "FEAT-009",
+      "module": "SITL Navigation & Failsafes",
+      "title": "Implement SITL position confidence gate and canopy dead reckoning fallback",
+      "context": "Cross-check RTK GPS, IMU, wheel odometer, and ultrasonic distance in SITL; trigger dead reckoning or safe HOLD on canopy GPS signal loss without logic crashes.",
+      "passes": false
+    },
+    {
+      "id": "FEAT-010",
+      "module": "SITL Telemetry & Recovery",
+      "title": "Validate SITL fault recovery, resume policy, and complete mission telemetry log",
+      "context": "Prove SITL mission completion under simulated obstacles and sensor drops, verify safe resume without duplicate spraying, and log black-box telemetry.",
+      "passes": false
     }
   ]
 }

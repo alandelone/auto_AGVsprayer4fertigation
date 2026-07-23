@@ -28,6 +28,8 @@ REQUIRED_FAULTS = {
     "low_battery",
     "rc_loss",
     "telemetry_loss",
+    "position_confidence_low",
+    "preflight_check_failed",
     "emergency_stop",
 }
 
