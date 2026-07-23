@@ -43,7 +43,7 @@
       "module": "Pixhawk Firmware & Parameters",
       "title": "Configure ArduRover Pixhawk actuator mapping and export parameter file",
       "context": "Map AUX1-AUX5 (SERVO9-SERVO13, RELAY1-RELAY4) to pump PWM, spray valves, agitation, and E-stop cutoff; generate production-ready pixhawk-ardurover-sprayer.param.",
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEAT-007",
