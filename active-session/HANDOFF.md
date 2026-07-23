@@ -4,7 +4,7 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-`FEAT-007` is active on branch `main` and still intentionally FAILING: stage-gate contracts exist and the mission source contract is now implemented, but exporter/validator/generated mission artifacts and verification evidence have not been added yet.
+`FEAT-007` is active on branch `feat/mission-source-contract` with PR #4 open against `main`. It is still intentionally FAILING: stage-gate contracts exist and the mission source contract is now implemented, but exporter/validator/generated mission artifacts and verification evidence have not been added yet.
 
 Features status:
 - FEAT-001 through FEAT-006: PASSING.
@@ -25,6 +25,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
   - `stage-gates/active/FEAT-007/04-verification.md`
 - FEAT-007 verification gate is deliberately `STATUS: FAIL` until exporter/validator artifacts exist and actual command output is pasted.
 - 2026-07-23T20:10:14Z heartbeat: created `missions/cucumber-row-mission.v0.json`, a deterministic synthetic mission source contract with 7 ordered mission items, 4 actuator transitions, synthetic-only coordinates, and FEAT-006 pump/relay command references.
+- 2026-07-23T20:12:00Z heartbeat: committed the mission source contract as `c494792`, pushed branch `feat/mission-source-contract`, and opened PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
 
 ## Latest Verification Commands
 
