@@ -1,0 +1,90 @@
+{
+  "version": "0.1.0",
+  "feature_id": "FEAT-006",
+  "firmware": "ArduRover",
+  "scope": "Pixhawk actuator mapping and ArduPilot parameter export for sprayer bench/SITL validation",
+  "hardware_boundary": [
+    "Pixhawk AUX outputs provide logic/PWM signals only; external driver boards must switch pump, valves, agitation, and cutoff loads.",
+    "Physical emergency stop must cut actuator power independent of Pixhawk software state.",
+    "Do not store farm coordinates, credentials, or private mission data in this mapping."
+  ],
+  "outputs": [
+    {
+      "id": "pump_pwm",
+      "role": "Pump PWM Speed Control",
+      "pixhawk_output": "AUX1",
+      "servo_channel": 9,
+      "function_parameter": "SERVO9_FUNCTION",
+      "function_value": 0,
+      "min_pwm_us": 1000,
+      "max_pwm_us": 2000,
+      "safe_pwm_us": 1000,
+      "driver_required": true,
+      "logic": "1000 us = OFF / minimum speed; 2000 us = maximum bench-rated speed"
+    },
+    {
+      "id": "left_spray_valve",
+      "role": "Left Spray Valve Relay",
+      "pixhawk_output": "AUX2",
+      "relay_number": 1,
+      "gpio_pin": 51,
+      "default_state": 0,
+      "active_state": 1,
+      "driver_required": true,
+      "logic": "Normally closed valve; OFF during boot, transit, and fault states"
+    },
+    {
+      "id": "right_spray_valve",
+      "role": "Right Spray Valve Relay",
+      "pixhawk_output": "AUX3",
+      "relay_number": 2,
+      "gpio_pin": 52,
+      "default_state": 0,
+      "active_state": 1,
+      "driver_required": true,
+      "logic": "Normally closed valve; OFF during boot, transit, and fault states"
+    },
+    {
+      "id": "agitation",
+      "role": "Tank Agitation Pump/Valve Relay",
+      "pixhawk_output": "AUX4",
+      "relay_number": 3,
+      "gpio_pin": 53,
+      "default_state": 0,
+      "active_state": 1,
+      "driver_required": true,
+      "logic": "Agitation disabled by default; enabled only during explicit bench/SITL command windows"
+    },
+    {
+      "id": "estop_cutoff",
+      "role": "Emergency Stop Physical Cutoff Relay Monitor/Command",
+      "pixhawk_output": "AUX5",
+      "relay_number": 4,
+      "gpio_pin": 54,
+      "default_state": 1,
+      "active_state": 0,
+      "driver_required": true,
+      "logic": "Active-high closed/healthy command by default; physical E-stop remains hardwired and authoritative"
+    }
+  ],
+  "parameters": {
+    "BRD_PWM_COUNT": 4,
+    "SERVO9_FUNCTION": 0,
+    "SERVO9_MIN": 1000,
+    "SERVO9_MAX": 2000,
+    "RELAY1_PIN": 51,
+    "RELAY1_DEFAULT": 0,
+    "RELAY2_PIN": 52,
+    "RELAY2_DEFAULT": 0,
+    "RELAY3_PIN": 53,
+    "RELAY3_DEFAULT": 0,
+    "RELAY4_PIN": 54,
+    "RELAY4_DEFAULT": 1
+  },
+  "forbidden": [
+    "direct Pixhawk power drive for pump or solenoid loads",
+    "software-only emergency stop",
+    "shared GPIO pin assignments across independent actuator roles",
+    "chemical/fertilizer testing before water-only bench acceptance passes"
+  ]
+}
