@@ -8,7 +8,7 @@ Repository memory scaffold uses the newer SSOT design. `feature-list.json` owns 
 
 Features status:
 - FEAT-001 through FEAT-005: PASSING.
-- FEAT-006: ACTIVE / FAILING (`04-verification.md` still lacks exact `STATUS: PASS`; parameter export and validator are not complete yet).
+- FEAT-006: ACTIVE / FAILING (`04-verification.md` still lacks exact `STATUS: PASS`; validator and captured verification evidence are not complete yet).
 - FEAT-007 through FEAT-010: PLANNED (MAVLink mission export, SITL preflight & dosing, SITL dead reckoning & position gate, SITL fault recovery & telemetry logging).
 
 ## Key Goal Clarification
@@ -28,6 +28,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - Created stage-gate structure for active feature `FEAT-006` under `stage-gates/active/FEAT-006/`.
 - Updated `implementation_plan.md` artifact.
 - 2026-07-23T07:57:04Z heartbeat: created `hardware/pixhawk-actuator-mapping.v0.json` for FEAT-006 and verified it is valid JSON.
+- 2026-07-23T10:59:27Z heartbeat: created `hardware/pixhawk-ardurover-sprayer.param` for FEAT-006 and verified its parameter entries match the JSON mapping contract.
 
 ## Latest Verification Commands
 
@@ -65,13 +66,43 @@ FAIL: verification gate must contain an exact STATUS line
 CHECK_GATE_EXIT=1
 ```
 
+```bash
+python - <<'PY'
+import json
+from pathlib import Path
+mapping=json.loads(Path('hardware/pixhawk-actuator-mapping.v0.json').read_text())
+param={}
+for line in Path('hardware/pixhawk-ardurover-sprayer.param').read_text().splitlines():
+    line=line.strip()
+    if not line or line.startswith('#'):
+        continue
+    k,v=line.split(',',1)
+    param[k]=int(v)
+expected=mapping['parameters']
+print('PARAM_MATCH=' + str(param == expected))
+print('PARAM_KEYS=' + ','.join(param.keys()))
+PY
+bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+```
+
+Output:
+
+```text
+PARAM_MATCH=True
+PARAM_KEYS=BRD_PWM_COUNT,SERVO9_FUNCTION,SERVO9_MIN,SERVO9_MAX,RELAY1_PIN,RELAY1_DEFAULT,RELAY2_PIN,RELAY2_DEFAULT,RELAY3_PIN,RELAY3_DEFAULT,RELAY4_PIN,RELAY4_DEFAULT
+Initializing auto_AGVsprayer4fertigation workspace...
+No build or test toolchain is configured yet.
+Add setup commands here when source code is introduced.
+FAIL: verification gate must contain an exact STATUS line
+CHECK_GATE_EXIT=1
+```
+
 ## Current Blocker
 
-FEAT-006 remains failing because only component 1 is complete. The repo still needs:
-1. `hardware/pixhawk-ardurover-sprayer.param`
-2. `scripts/validate-pixhawk-mapping.py`
-3. actual validator output pasted into `stage-gates/active/FEAT-006/04-verification.md` with exact `STATUS: PASS`
+FEAT-006 remains failing because components 1 and 2 are complete, but validation/evidence are not complete. The repo still needs:
+1. `scripts/validate-pixhawk-mapping.py`
+2. actual validator output pasted into `stage-gates/active/FEAT-006/04-verification.md` with exact `STATUS: PASS`
 
 ## Next Concrete Step
 
-Implement the next single FEAT-006 component: create `hardware/pixhawk-ardurover-sprayer.param` from the JSON `parameters` block, review it against the design table, then rerun `bash init.sh && bash scripts/check-gate.sh`.
+Implement the next single FEAT-006 component: create `scripts/validate-pixhawk-mapping.py` to verify JSON structure, `.param` parity, and channel/relay uniqueness; run it, then update `04-verification.md` with actual command output only after validation passes.

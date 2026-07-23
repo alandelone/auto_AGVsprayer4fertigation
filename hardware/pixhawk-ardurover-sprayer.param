@@ -1,0 +1,15 @@
+# FEAT-006 ArduRover sprayer actuator parameters
+# Source: hardware/pixhawk-actuator-mapping.v0.json
+# Format: ArduPilot Mission Planner parameter file entries: PARAM_NAME,VALUE
+BRD_PWM_COUNT,4
+SERVO9_FUNCTION,0
+SERVO9_MIN,1000
+SERVO9_MAX,2000
+RELAY1_PIN,51
+RELAY1_DEFAULT,0
+RELAY2_PIN,52
+RELAY2_DEFAULT,0
+RELAY3_PIN,53
+RELAY3_DEFAULT,0
+RELAY4_PIN,54
+RELAY4_DEFAULT,1
