@@ -35,3 +35,4 @@ REVIEW FEAT-007 exporter: PASS files scripts/export-mission-files.py, missions/e
 REVIEW FEAT-007 validator wiring: PASS files scripts/validate-mission-exports.py and scripts/check-gate.sh; validator parses source/.plan/.waypoints, checks synthetic-coordinate policy, command counts, actuator transitions, and export parity; repo gate still fails until verification evidence is pasted and STATUS set PASS.
 
 2026-07-24T05:21:57Z heartbeat: completed FEAT-007 verification evidence, set 04-verification.md STATUS: PASS with actual exporter/validator/smoke/full-gate outputs, ran python scripts/update-feature.py feature-list.json to mark FEAT-007 passing, and reran full gate successfully (CHECK_GATE_EXIT=0).
+2026-07-24T05:23:30Z heartbeat: committed FEAT-007 verification completion as 62bc6f1 and pushed it to origin/feat/mission-source-contract for PR #4.

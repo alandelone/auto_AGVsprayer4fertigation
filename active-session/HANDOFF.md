@@ -132,8 +132,8 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-No local FEAT-007 blocker. Remaining work is to commit/push this verification completion and then merge PR #4 if desired. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; the next feature pointer should be moved to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
+No local FEAT-007 blocker. Commit `62bc6f1` was pushed to PR #4 (`feat/mission-source-contract` -> `main`), and the branch is clean. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
 
 ## Next Concrete Step
 
-Commit and push FEAT-007 verification completion, then proceed with PR #4 review/merge. After FEAT-007 lands on `main`, create the next branch for FEAT-008 and stage-gate the SITL preflight/dosing work before implementation.
+Review/merge PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4. After FEAT-007 lands on `main`, create the next branch for FEAT-008 and stage-gate the SITL preflight/dosing work before implementation.
