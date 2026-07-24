@@ -4,11 +4,11 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-`FEAT-007` is active on branch `feat/mission-source-contract` with PR #4 open against `main`. It is still intentionally FAILING: stage-gate contracts, the mission source contract, exporter, and generated mission artifacts now exist, but the validator/check-gate wiring and final PASS verification evidence have not been added yet.
+`FEAT-007` is active on branch `feat/mission-source-contract` with PR #4 open against `main`. It is still intentionally FAILING: stage-gate contracts, the mission source contract, exporter, generated mission artifacts, validator, and check-gate wiring now exist, but final PASS verification evidence has not been pasted into `04-verification.md` yet.
 
 Features status:
 - FEAT-001 through FEAT-006: PASSING.
-- FEAT-007: ACTIVE / stage-gated / exporter implemented / failing until validator, check-gate wiring, and PASS evidence are captured.
+- FEAT-007: ACTIVE / stage-gated / exporter and validator implemented / failing until PASS evidence is captured in `04-verification.md`.
 - FEAT-008 through FEAT-010: PLANNED (SITL preflight & dosing, SITL dead reckoning & position gate, SITL fault recovery & telemetry logging).
 
 ## Key Goal Clarification
@@ -31,6 +31,10 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
   - `missions/exports/cucumber-row-mission.plan`
   - `missions/exports/cucumber-row-mission.waypoints`
 - Recorded `REVIEW FEAT-007 exporter: PASS ...` in `active-session/progress.log` after deterministic exporter and smoke checks.
+- 2026-07-24T02:17:36Z heartbeat: implemented FEAT-007 component 3 validator wiring:
+  - `scripts/validate-mission-exports.py`
+  - `scripts/check-gate.sh`
+- Recorded `REVIEW FEAT-007 validator wiring: PASS ...` in `active-session/progress.log`; validator and export checks pass, while the repo gate still fails only because verification remains `STATUS: FAIL` pending evidence capture.
 
 ## Latest Verification Commands
 
@@ -96,6 +100,27 @@ EXPORT_SMOKE_OK wpl_lines=29 commands_16=6 commands_178=6 commands_181=12 comman
 ```
 
 ```bash
+chmod +x scripts/validate-mission-exports.py && python scripts/export-mission-files.py && python scripts/validate-mission-exports.py && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+```
+
+Output after validator wiring:
+
+```text
+EXPORTED_QGC_PLAN=missions/exports/cucumber-row-mission.plan
+EXPORTED_ARDUPILOT_WPL110=missions/exports/cucumber-row-mission.waypoints
+MISSION_EXPORT_ITEMS=28 WAYPOINTS=6 ACTUATOR_COMMANDS=16
+MISSION_EXPORT_VALIDATION_OK
+SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
+COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
+SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
+Initializing auto_AGVsprayer4fertigation workspace...
+No build or test toolchain is configured yet.
+Add setup commands here when source code is introduced.
+FAIL: verification gate status must be PASS
+CHECK_GATE_EXIT=1
+```
+
+```bash
 bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
@@ -111,13 +136,11 @@ CHECK_GATE_EXIT=1
 
 ## Current Blocker
 
-FEAT-007 still needs implementation component 3. The active gate fails because `stage-gates/active/FEAT-007/04-verification.md` remains `STATUS: FAIL` and `scripts/validate-mission-exports.py` has not been created or wired into `scripts/check-gate.sh` yet.
+FEAT-007 gate fails because `stage-gates/active/FEAT-007/04-verification.md` remains `STATUS: FAIL`. The validator and check-gate wiring now exist and pass before the status gate stops the full repo gate.
 
 ## Next Concrete Step
 
-Implement FEAT-007 component 3:
-- Create `scripts/validate-mission-exports.py` to parse `missions/cucumber-row-mission.v0.json`, `missions/exports/cucumber-row-mission.plan`, and `missions/exports/cucumber-row-mission.waypoints`.
-- Wire it into `scripts/check-gate.sh`.
-- Run exporter, validator, and repo gate.
-- Paste actual command/output evidence into `stage-gates/active/FEAT-007/04-verification.md` and set `STATUS: PASS` only after successful validation.
-- Run `bash scripts/check-gate.sh`; if it passes, run `python scripts/update-feature.py feature-list.json` rather than hand-editing `feature-list.json` passes.
+Finish FEAT-007 verification evidence:
+- Paste actual exporter, validator, and full gate command/output evidence into `stage-gates/active/FEAT-007/04-verification.md`.
+- Set `STATUS: PASS` only alongside that captured evidence.
+- Run `bash init.sh && bash scripts/check-gate.sh`; if it passes, run `python scripts/update-feature.py feature-list.json` rather than hand-editing `feature-list.json` passes.
