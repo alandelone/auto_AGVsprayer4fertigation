@@ -35,6 +35,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - Recorded `REVIEW FEAT-007 validator wiring: PASS ...` in `active-session/progress.log`; validator and export checks passed while the repo gate still failed only because verification remained `STATUS: FAIL` pending evidence capture.
 - 2026-07-24T05:21:57Z heartbeat: completed FEAT-007 verification evidence and marked FEAT-007 passing via `python scripts/update-feature.py feature-list.json` after the gate passed.
 - 2026-07-24T20:47:25Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #4 remains OPEN with no status checks; no implementation changes were made because FEAT-007 is already passing and awaiting integration.
+- 2026-07-24T23:49:25Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #4 remains OPEN/CLEAN with no status checks; no implementation changes were made because FEAT-007 is already passing and awaiting integration.
 
 ## Latest Verification Commands
 
@@ -52,8 +53,28 @@ origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
-FAIL: verification gate status must be PASS
-CHECK_GATE_EXIT=1
+Gate check passed
+Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
+Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
+- ROW_ENTRY entry_transit: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- SPRAY_ON row_01_left_spray: spray=LEFT speed=0.25 outputs={'pump': True, 'left_valve': True, 'right_valve': False}
+- SPRAY_TRANSITION OFF->LEFT at row_01_left_spray
+- FAULT_STOP front_obstacle during row_01_left_spray: mode=HOLD outputs={'pump': False, 'left_valve': False, 'right_valve': False} operator_review_required=True
+- SPRAY_TRANSITION LEFT->OFF at row_01_exit_off
+- ROW_EXIT row_01_exit_off: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- MISSION_END return_to_hold: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+Validated hardware BOM/pinout contract: hardware/bom-pinout.v0.json
+Validated bench ratings contract: hardware/bench-test-ratings.v0.json margin=3.3x
+Validated bench procedure contract: hardware/bench-test-procedure.v0.json tests=8
+Validated Pixhawk actuator mapping: hardware/pixhawk-actuator-mapping.v0.json
+Validated ArduRover parameter export: hardware/pixhawk-ardurover-sprayer.param
+ACTUATOR_OUTPUTS=AUX1,AUX2,AUX3,AUX4,AUX5
+PARAMETERS=BRD_PWM_COUNT,SERVO9_FUNCTION,SERVO9_MIN,SERVO9_MAX,RELAY1_PIN,RELAY1_DEFAULT,RELAY2_PIN,RELAY2_DEFAULT,RELAY3_PIN,RELAY3_DEFAULT,RELAY4_PIN,RELAY4_DEFAULT
+MISSION_EXPORT_VALIDATION_OK
+SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
+COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
+SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
+CHECK_GATE_EXIT=0
 ```
 
 ```bash
@@ -133,7 +154,7 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-FEAT-007 has no local code blocker and full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN as of 2026-07-24T20:47:25Z, with no reported status checks in `gh pr view`. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
+FEAT-007 has no local code blocker and full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN/CLEAN as of 2026-07-24T23:49:25Z, with no reported status checks in `gh pr view`. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
 
 Heartbeat cron job `0248354e8f86` is paused as of 2026-07-24T07:09:24Z to avoid repeated blocker/status spam. Resume it only after the PR/integration blocker is solved.
 
