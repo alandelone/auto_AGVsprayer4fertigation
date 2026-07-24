@@ -29,3 +29,7 @@ fi
 if [[ -x "$ROOT_DIR/scripts/validate-pixhawk-mapping.py" ]]; then
   python "$ROOT_DIR/scripts/validate-pixhawk-mapping.py"
 fi
+
+if [[ -x "$ROOT_DIR/scripts/validate-mission-exports.py" ]]; then
+  python "$ROOT_DIR/scripts/validate-mission-exports.py"
+fi

@@ -4,11 +4,10 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-`FEAT-007` is now active on branch `main` and is intentionally FAILING: stage-gate contracts exist, but Mission Planner / QGC export implementation and verification evidence have not been added yet.
+`FEAT-007` is active on branch `feat/mission-source-contract` with PR #4 open against `main`. FEAT-007 is now PASSING locally: verification evidence was pasted into `stage-gates/active/FEAT-007/04-verification.md`, `python scripts/update-feature.py feature-list.json` marked FEAT-007 passing, and the full repo gate exits 0.
 
 Features status:
-- FEAT-001 through FEAT-006: PASSING.
-- FEAT-007: ACTIVE / stage-gated / failing until implementation evidence is captured.
+- FEAT-001 through FEAT-007: PASSING.
 - FEAT-008 through FEAT-010: PLANNED (SITL preflight & dosing, SITL dead reckoning & position gate, SITL fault recovery & telemetry logging).
 
 ## Key Goal Clarification
@@ -23,22 +22,88 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
   - `stage-gates/active/FEAT-007/02-tech-design.md`
   - `stage-gates/active/FEAT-007/03-execution.md`
   - `stage-gates/active/FEAT-007/04-verification.md`
-- FEAT-007 verification gate is deliberately `STATUS: FAIL` until exporter/validator artifacts exist and actual command output is pasted.
+- 2026-07-23T20:10:14Z heartbeat: created `missions/cucumber-row-mission.v0.json`, a deterministic synthetic mission source contract with 7 ordered mission items, 4 actuator transitions, synthetic-only coordinates, and FEAT-006 pump/relay command references.
+- 2026-07-23T20:12:00Z heartbeat: committed the mission source contract as `c494792`, pushed branch `feat/mission-source-contract`, and opened PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
+- 2026-07-23T23:14:28Z heartbeat: implemented FEAT-007 component 2 exporter:
+  - `scripts/export-mission-files.py`
+  - `missions/exports/cucumber-row-mission.plan`
+  - `missions/exports/cucumber-row-mission.waypoints`
+- Recorded `REVIEW FEAT-007 exporter: PASS ...` in `active-session/progress.log` after deterministic exporter and smoke checks.
+- 2026-07-24T02:17:36Z heartbeat: implemented FEAT-007 component 3 validator wiring:
+  - `scripts/validate-mission-exports.py`
+  - `scripts/check-gate.sh`
+- Recorded `REVIEW FEAT-007 validator wiring: PASS ...` in `active-session/progress.log`; validator and export checks passed while the repo gate still failed only because verification remained `STATUS: FAIL` pending evidence capture.
+- 2026-07-24T05:21:57Z heartbeat: completed FEAT-007 verification evidence and marked FEAT-007 passing via `python scripts/update-feature.py feature-list.json` after the gate passed.
+- 2026-07-24T20:47:25Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #4 remains OPEN with no status checks; no implementation changes were made because FEAT-007 is already passing and awaiting integration.
 
 ## Latest Verification Commands
 
 ```bash
-git rev-parse --show-toplevel && git status --short --branch && git branch --show-current && git remote -v && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+git rev-parse --show-toplevel && git status --short --branch && git remote -v && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+```
+
+Output before this progress step:
+
+```text
+/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
+## feat/mission-source-contract...origin/feat/mission-source-contract
+origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
+origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
+Initializing auto_AGVsprayer4fertigation workspace...
+No build or test toolchain is configured yet.
+Add setup commands here when source code is introduced.
+FAIL: verification gate status must be PASS
+CHECK_GATE_EXIT=1
+```
+
+```bash
+python scripts/export-mission-files.py && python scripts/validate-mission-exports.py
 ```
 
 Output:
 
 ```text
-/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
-## main...origin/main
-main
-origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
-origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
+EXPORTED_QGC_PLAN=missions/exports/cucumber-row-mission.plan
+EXPORTED_ARDUPILOT_WPL110=missions/exports/cucumber-row-mission.waypoints
+MISSION_EXPORT_ITEMS=28 WAYPOINTS=6 ACTUATOR_COMMANDS=16
+MISSION_EXPORT_VALIDATION_OK
+SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
+COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
+SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
+```
+
+```bash
+python -m json.tool missions/exports/cucumber-row-mission.plan >/tmp/feat007-plan-jsoncheck.out && python - <<'PY'
+from pathlib import Path
+wpl = Path('missions/exports/cucumber-row-mission.waypoints')
+lines = wpl.read_text(encoding='utf-8').splitlines()
+assert lines[0] == 'QGC WPL 110'
+assert len(lines) == 29, len(lines)
+cols = [line.split('\t') for line in lines[1:]]
+assert all(len(row) == 12 for row in cols)
+commands = [int(row[3]) for row in cols]
+assert commands.count(16) == 6
+assert commands.count(178) == 6
+assert commands.count(181) == 12
+assert commands.count(183) == 4
+print(f'EXPORT_SMOKE_OK wpl_lines={len(lines)} commands_16={commands.count(16)} commands_178={commands.count(178)} commands_181={commands.count(181)} commands_183={commands.count(183)}')
+PY
+```
+
+Output:
+
+```text
+EXPORT_SMOKE_OK wpl_lines=29 commands_16=6 commands_178=6 commands_181=12 commands_183=4
+```
+
+```bash
+python scripts/update-feature.py feature-list.json && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+```
+
+Output after this progress step:
+
+```text
+Updated FEAT-007 passes=true
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
@@ -59,27 +124,19 @@ Validated Pixhawk actuator mapping: hardware/pixhawk-actuator-mapping.v0.json
 Validated ArduRover parameter export: hardware/pixhawk-ardurover-sprayer.param
 ACTUATOR_OUTPUTS=AUX1,AUX2,AUX3,AUX4,AUX5
 PARAMETERS=BRD_PWM_COUNT,SERVO9_FUNCTION,SERVO9_MIN,SERVO9_MAX,RELAY1_PIN,RELAY1_DEFAULT,RELAY2_PIN,RELAY2_DEFAULT,RELAY3_PIN,RELAY3_DEFAULT,RELAY4_PIN,RELAY4_DEFAULT
+MISSION_EXPORT_VALIDATION_OK
+SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
+COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
+SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
 CHECK_GATE_EXIT=0
-```
-
-```bash
-bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
-```
-
-Output after activating FEAT-007:
-
-```text
-Initializing auto_AGVsprayer4fertigation workspace...
-No build or test toolchain is configured yet.
-Add setup commands here when source code is introduced.
-FAIL: verification gate status must be PASS
-CHECK_GATE_EXIT=1
 ```
 
 ## Current Blocker
 
-FEAT-007 needs implementation. The active gate fails because `stage-gates/active/FEAT-007/04-verification.md` is `STATUS: FAIL` and no mission exporter/validator evidence exists yet.
+FEAT-007 has no local code blocker and full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN as of 2026-07-24T20:47:25Z, with no reported status checks in `gh pr view`. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
+
+Heartbeat cron job `0248354e8f86` is paused as of 2026-07-24T07:09:24Z to avoid repeated blocker/status spam. Resume it only after the PR/integration blocker is solved.
 
 ## Next Concrete Step
 
-Implement FEAT-007 component 1: create `missions/cucumber-row-mission.v0.json` with deterministic synthetic route points, row labels, target speeds, spray states, and actuator transition points aligned with FEAT-006 pump/relay mapping. After creation, run a structural JSON check and append a `REVIEW FEAT-007 mission source contract: PASS|FAIL ...` line to `active-session/progress.log`.
+Review/merge PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4. After FEAT-007 lands on `main`, create the next branch for FEAT-008 and resume heartbeat if continued autonomous work is wanted.
