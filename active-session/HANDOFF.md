@@ -132,8 +132,10 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-No local FEAT-007 blocker. Commit `62bc6f1` was pushed to PR #4 (`feat/mission-source-contract` -> `main`), and the branch is clean. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
+FEAT-007 has no local code blocker and full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN as of 2026-07-24T17:45:29Z, with no reported status checks in `gh pr view`. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
+
+Heartbeat cron job `0248354e8f86` is paused as of 2026-07-24T07:09:24Z to avoid repeated blocker/status spam. Resume it only after the PR/integration blocker is solved.
 
 ## Next Concrete Step
 
-Review/merge PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4. After FEAT-007 lands on `main`, create the next branch for FEAT-008 and stage-gate the SITL preflight/dosing work before implementation.
+Review/merge PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4. After FEAT-007 lands on `main`, create the next branch for FEAT-008 and resume heartbeat if continued autonomous work is wanted.
