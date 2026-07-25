@@ -4,7 +4,7 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-`FEAT-007` is active on branch `feat/mission-source-contract` with PR #4 open against `main`. FEAT-007 is now PASSING locally: verification evidence was pasted into `stage-gates/active/FEAT-007/04-verification.md`, `python scripts/update-feature.py feature-list.json` marked FEAT-007 passing, and the full repo gate exits 0.
+`FEAT-007` is active on branch `feat/mission-source-contract` with PR #4 open against `main`. FEAT-007 is PASSING locally: verification evidence is in `stage-gates/active/FEAT-007/04-verification.md`, `python scripts/update-feature.py feature-list.json` has marked FEAT-007 passing, and the full repo gate exits 0.
 
 Features status:
 - FEAT-001 through FEAT-007: PASSING.
@@ -12,34 +12,14 @@ Features status:
 
 ## Key Goal Clarification
 
-The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhawk firmware configurations, parameters, Lua scripts, and companion control integrations, and verifying in **ArduPilot SITL simulation** that all sprayer features (actuation, preflight gate, dosing calibration, canopy dead reckoning fallback, position confidence gate, recovery policy) execute cleanly **without logic crash**.
+The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhawk firmware configurations, parameters, Lua scripts, and companion control integrations, and verifying in **ArduPilot SITL simulation** that all sprayer features execute cleanly **without logic crash**.
 
 ## Completed Work in Active Session
 
 - FEAT-006 is complete and marked passing through `scripts/update-feature.py`.
-- 2026-07-23T17:07:18Z heartbeat: read hot context, verified repo status and active gate, moved `active_feature` from `FEAT-006` to `FEAT-007`, and created FEAT-007 stage-gate contracts:
-  - `stage-gates/active/FEAT-007/01-discovery.md`
-  - `stage-gates/active/FEAT-007/02-tech-design.md`
-  - `stage-gates/active/FEAT-007/03-execution.md`
-  - `stage-gates/active/FEAT-007/04-verification.md`
-- 2026-07-23T20:10:14Z heartbeat: created `missions/cucumber-row-mission.v0.json`, a deterministic synthetic mission source contract with 7 ordered mission items, 4 actuator transitions, synthetic-only coordinates, and FEAT-006 pump/relay command references.
-- 2026-07-23T20:12:00Z heartbeat: committed the mission source contract as `c494792`, pushed branch `feat/mission-source-contract`, and opened PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
-- 2026-07-23T23:14:28Z heartbeat: implemented FEAT-007 component 2 exporter:
-  - `scripts/export-mission-files.py`
-  - `missions/exports/cucumber-row-mission.plan`
-  - `missions/exports/cucumber-row-mission.waypoints`
-- Recorded `REVIEW FEAT-007 exporter: PASS ...` in `active-session/progress.log` after deterministic exporter and smoke checks.
-- 2026-07-24T02:17:36Z heartbeat: implemented FEAT-007 component 3 validator wiring:
-  - `scripts/validate-mission-exports.py`
-  - `scripts/check-gate.sh`
-- Recorded `REVIEW FEAT-007 validator wiring: PASS ...` in `active-session/progress.log`; validator and export checks passed while the repo gate still failed only because verification remained `STATUS: FAIL` pending evidence capture.
-- 2026-07-24T05:21:57Z heartbeat: completed FEAT-007 verification evidence and marked FEAT-007 passing via `python scripts/update-feature.py feature-list.json` after the gate passed.
-- 2026-07-24T20:47:25Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #4 remains OPEN with no status checks; no implementation changes were made because FEAT-007 is already passing and awaiting integration.
-- 2026-07-24T23:49:25Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #4 remains OPEN with no status checks after push (`mergeStateStatus=UNKNOWN` while GitHub recalculates); no implementation changes were made because FEAT-007 is already passing and awaiting integration.
-- 2026-07-25T02:51:34Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #4 remains OPEN with no status checks and `mergeStateStatus=CLEAN`; no implementation changes were made because FEAT-007 is already passing and awaiting integration.
-- 2026-07-25T05:55:33Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #4 remains OPEN with no status checks and `mergeStateStatus=CLEAN`; no implementation changes were made because FEAT-007 is already passing and awaiting integration.
-- 2026-07-25T11:59:29Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #4 remains OPEN with no status checks and `mergeStateStatus=CLEAN`; no implementation changes were made because FEAT-007 is already passing and awaiting integration.
-- 2026-07-25T15:01:36Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`), verified PR #4 remains OPEN with no status checks and `mergeStateStatus=CLEAN` before committing, then pushed heartbeat handoff updates; post-push PR state remains OPEN with no status checks and `mergeStateStatus=UNKNOWN` while GitHub recalculates.
+- FEAT-007 stage-gate contracts, mission source contract, Mission Planner/QGC exporters, exported artifacts, validator wiring, verification evidence, and feature-list pass update are complete.
+- FEAT-007 branch `feat/mission-source-contract` is pushed and PR #4 is open: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
+- 2026-07-25T18:05:32Z heartbeat: read hot context, verified branch/remotes, reran the full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #4 remains OPEN with no status checks and `mergeStateStatus=CLEAN`. No implementation changes were made because FEAT-007 is already passing and awaiting integration.
 
 ## Latest Verification Commands
 
@@ -47,7 +27,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 git rev-parse --show-toplevel && git status --short --branch && git remote -v && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output before this progress step:
+Output:
 
 ```text
 /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
@@ -82,86 +62,27 @@ CHECK_GATE_EXIT=0
 ```
 
 ```bash
-python scripts/export-mission-files.py && python scripts/validate-mission-exports.py
+gh auth status && gh pr view 4 --json number,state,url,mergeStateStatus,statusCheckRollup,headRefName,baseRefName
 ```
 
 Output:
 
 ```text
-EXPORTED_QGC_PLAN=missions/exports/cucumber-row-mission.plan
-EXPORTED_ARDUPILOT_WPL110=missions/exports/cucumber-row-mission.waypoints
-MISSION_EXPORT_ITEMS=28 WAYPOINTS=6 ACTUATOR_COMMANDS=16
-MISSION_EXPORT_VALIDATION_OK
-SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
-COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
-SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
-```
-
-```bash
-python -m json.tool missions/exports/cucumber-row-mission.plan >/tmp/feat007-plan-jsoncheck.out && python - <<'PY'
-from pathlib import Path
-wpl = Path('missions/exports/cucumber-row-mission.waypoints')
-lines = wpl.read_text(encoding='utf-8').splitlines()
-assert lines[0] == 'QGC WPL 110'
-assert len(lines) == 29, len(lines)
-cols = [line.split('\t') for line in lines[1:]]
-assert all(len(row) == 12 for row in cols)
-commands = [int(row[3]) for row in cols]
-assert commands.count(16) == 6
-assert commands.count(178) == 6
-assert commands.count(181) == 12
-assert commands.count(183) == 4
-print(f'EXPORT_SMOKE_OK wpl_lines={len(lines)} commands_16={commands.count(16)} commands_178={commands.count(178)} commands_181={commands.count(181)} commands_183={commands.count(183)}')
-PY
-```
-
-Output:
-
-```text
-EXPORT_SMOKE_OK wpl_lines=29 commands_16=6 commands_178=6 commands_181=12 commands_183=4
-```
-
-```bash
-python scripts/update-feature.py feature-list.json && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
-```
-
-Output after this progress step:
-
-```text
-Updated FEAT-007 passes=true
-Initializing auto_AGVsprayer4fertigation workspace...
-No build or test toolchain is configured yet.
-Add setup commands here when source code is introduced.
-Gate check passed
-Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
-Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
-- ROW_ENTRY entry_transit: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
-- SPRAY_ON row_01_left_spray: spray=LEFT speed=0.25 outputs={'pump': True, 'left_valve': True, 'right_valve': False}
-- SPRAY_TRANSITION OFF->LEFT at row_01_left_spray
-- FAULT_STOP front_obstacle during row_01_left_spray: mode=HOLD outputs={'pump': False, 'left_valve': False, 'right_valve': False} operator_review_required=True
-- SPRAY_TRANSITION LEFT->OFF at row_01_exit_off
-- ROW_EXIT row_01_exit_off: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
-- MISSION_END return_to_hold: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
-Validated hardware BOM/pinout contract: hardware/bom-pinout.v0.json
-Validated bench ratings contract: hardware/bench-test-ratings.v0.json margin=3.3x
-Validated bench procedure contract: hardware/bench-test-procedure.v0.json tests=8
-Validated Pixhawk actuator mapping: hardware/pixhawk-actuator-mapping.v0.json
-Validated ArduRover parameter export: hardware/pixhawk-ardurover-sprayer.param
-ACTUATOR_OUTPUTS=AUX1,AUX2,AUX3,AUX4,AUX5
-PARAMETERS=BRD_PWM_COUNT,SERVO9_FUNCTION,SERVO9_MIN,SERVO9_MAX,RELAY1_PIN,RELAY1_DEFAULT,RELAY2_PIN,RELAY2_DEFAULT,RELAY3_PIN,RELAY3_DEFAULT,RELAY4_PIN,RELAY4_DEFAULT
-MISSION_EXPORT_VALIDATION_OK
-SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
-COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
-SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
-CHECK_GATE_EXIT=0
+github.com
+  ✓ Logged in to github.com account alanworkliaolo (/home/ubuntu/.hermes/profiles/evergreen4bot/home/.config/gh/hosts.yml)
+  - Active account: true
+  - Git operations protocol: https
+  - Token: gho_************************************
+  - Token scopes: 'gist', 'read:org', 'repo'
+{"baseRefName":"main","headRefName":"feat/mission-source-contract","mergeStateStatus":"CLEAN","number":4,"state":"OPEN","statusCheckRollup":[],"url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4"}
 ```
 
 ## Current Blocker
 
-FEAT-007 has no local code blocker and full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN as of 2026-07-25T15:02:49Z, with no reported status checks and post-push `mergeStateStatus=UNKNOWN` in `gh pr view` while GitHub recalculates. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
+FEAT-007 has no local code blocker and the full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN as of 2026-07-25T18:05:32Z, with no reported status checks and `mergeStateStatus=CLEAN`. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
 
 Heartbeat cron job `0248354e8f86` is paused as of 2026-07-24T07:09:24Z to avoid repeated blocker/status spam. Resume it only after the PR/integration blocker is solved.
 
 ## Next Concrete Step
 
-Review/merge PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4. After FEAT-007 lands on `main`, create the next branch for FEAT-008 and resume heartbeat if continued autonomous work is wanted.
+Review/merge PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4. After FEAT-007 lands on `main`, sync the local default branch as appropriate, create the next branch for FEAT-008, update `active_feature`, and resume heartbeat if continued autonomous work is wanted.
