@@ -19,7 +19,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - FEAT-006 is complete and marked passing through `scripts/update-feature.py`.
 - FEAT-007 stage-gate contracts, mission source contract, Mission Planner/QGC exporters, exported artifacts, validator wiring, verification evidence, and feature-list pass update are complete.
 - FEAT-007 branch `feat/mission-source-contract` is pushed and PR #4 is open: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
-- 2026-07-25T21:07:31Z heartbeat: read hot context, verified branch/remotes, reran the full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #4 remains OPEN with no status checks and `mergeStateStatus=CLEAN`. No implementation changes were made because FEAT-007 is already passing and awaiting integration.
+- 2026-07-26T00:09:26Z heartbeat: read hot context, verified branch/remotes, reran the full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #4 remains OPEN with no status checks and `mergeStateStatus=CLEAN`. No implementation changes were made because FEAT-007 is already passing and awaiting integration.
 
 ## Latest Verification Commands
 
@@ -79,7 +79,7 @@ github.com
 
 ## Current Blocker
 
-FEAT-007 has no local code blocker and the full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN as of 2026-07-25T21:07:31Z, with no reported status checks and `mergeStateStatus=CLEAN`. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
+FEAT-007 has no local code blocker and the full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN as of 2026-07-26T00:09:26Z, with no reported status checks and `mergeStateStatus=CLEAN`. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
 
 Heartbeat cron job `0248354e8f86` is paused as of 2026-07-24T07:09:24Z to avoid repeated blocker/status spam. Resume it only after the PR/integration blocker is solved.
 
