@@ -51,3 +51,5 @@ REVIEW FEAT-007 validator wiring: PASS files scripts/validate-mission-exports.py
 
 2026-07-26T06:14:17Z heartbeat: PR #4 verified MERGED; fast-forwarded local main; created branch feat/sitl-preflight-dosing; moved active_feature to FEAT-008; created FEAT-008 stage-gate contracts; reran gate with CHECK_GATE_EXIT=1 because FEAT-008 verification remains STATUS: FAIL until implementation.
 REVIEW FEAT-008-stage-gates: PASS Created required 01-discovery, 02-tech-design, 03-execution, and 04-verification files; no placeholder PASS; current gate fails closed with captured output.
+2026-07-26T09:17:25Z heartbeat: read hot context, verified repo root/branch/remotes, reran init + full gate (CHECK_GATE_EXIT=1), created sitl/preflight-dosing.v0.json as the FEAT-008 preflight/dosing scenario contract, verified JSON syntax, and reran gate (still CHECK_GATE_EXIT=1 until validator, gate wiring, docs, and PASS evidence are added).
+REVIEW FEAT-008 preflight/dosing contract: PASS sitl/preflight-dosing.v0.json is valid JSON with explicit requirements, dosing formula/units, one safe scenario, and two blocked unsafe scenarios; deterministic validator is still pending.
