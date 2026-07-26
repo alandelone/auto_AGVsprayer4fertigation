@@ -4,14 +4,13 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-PR #4 for FEAT-007 was verified MERGED on GitHub. Local `main` was fast-forwarded to `origin/main`, and the active branch is `feat/sitl-preflight-dosing` for FEAT-008.
+Active branch: `feat/sitl-preflight-dosing`.
 
-`active_feature` points to `FEAT-008`. FEAT-008 stage-gate contracts exist. The implementation artifacts `sitl/preflight-dosing.v0.json`, `scripts/validate-preflight-dosing.py`, and `docs/preflight-dosing.md` exist. `scripts/check-gate.sh` is wired to run the preflight/dosing validator before the active verification-status check, so the validator evidence appears even while the FEAT-008 verification gate remains intentionally FAIL. FEAT-008 is still not passing until final verification evidence is added.
+`active_feature` still points to `FEAT-008`. FEAT-008 is now passing: its implementation artifacts exist, `stage-gates/active/FEAT-008/04-verification.md` has actual command/output evidence and `STATUS: PASS`, and `python scripts/update-feature.py feature-list.json` marked `FEAT-008` with `passes=true`.
 
 Features status:
-- FEAT-001 through FEAT-007: PASSING.
-- FEAT-008: ACTIVE / FAILING (scenario contract, validator, gate wiring, and docs complete; final evidence/update-feature pending).
-- FEAT-009 through FEAT-010: PLANNED.
+- FEAT-001 through FEAT-008: PASSING.
+- FEAT-009 through FEAT-010: PLANNED / not passing.
 
 ## Key Goal Clarification
 
@@ -22,26 +21,20 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - FEAT-006 is complete and marked passing through `scripts/update-feature.py`.
 - FEAT-007 stage-gate contracts, mission source contract, Mission Planner/QGC exporters, exported artifacts, validator wiring, verification evidence, and feature-list pass update are complete.
 - FEAT-007 PR #4 was verified MERGED: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
-- 2026-07-26T06:14:17Z heartbeat: read hot context, verified repo root/status/remotes, reran FEAT-007 gate successfully before branch transition (`CHECK_GATE_EXIT=0`), verified PR #4 is MERGED, fast-forwarded local `main`, created branch `feat/sitl-preflight-dosing`, changed `active_feature` to FEAT-008, created FEAT-008 stage-gate contracts, and captured the current failing gate evidence (`CHECK_GATE_EXIT=1`).
-- 2026-07-26T09:17:25Z heartbeat: read hot context, verified repo root/status/remotes, reran FEAT-008 gate (`CHECK_GATE_EXIT=1`), created `sitl/preflight-dosing.v0.json`, verified JSON syntax, reran gate (`CHECK_GATE_EXIT=1`), and recorded the component review.
-- 2026-07-26T12:21:07Z heartbeat: read hot context, reran FEAT-008 gate (`CHECK_GATE_EXIT=1`), created `scripts/validate-preflight-dosing.py`, verified `py_compile` and standalone validator output, reran gate (`CHECK_GATE_EXIT=1`), and recorded the component review.
-- 2026-07-26T15:24:23Z heartbeat: read hot context, verified repo root/status/remotes, reran FEAT-008 gate (`CHECK_GATE_EXIT=1`), wired `scripts/check-gate.sh` to run `scripts/validate-preflight-dosing.py`, verified `py_compile`/validator/full gate output, reran gate (`CHECK_GATE_EXIT=1`), and recorded the component review.
-- 2026-07-26T18:27:07Z heartbeat: read hot context, verified repo root/status/remotes, reran FEAT-008 gate (`CHECK_GATE_EXIT=1`), added `docs/preflight-dosing.md`, verified `py_compile`/validator/full gate output, reran gate (`CHECK_GATE_EXIT=1`), and recorded the component review.
+- FEAT-008 stage-gate contracts, preflight/dosing scenario contract, deterministic validator, gate wiring, docs, final verification evidence, and feature-list pass update are complete.
+- 2026-07-26T21:29:23Z heartbeat: read hot context, verified repo root/status, reran FEAT-008 gate initially failing (`CHECK_GATE_EXIT=1`), updated final verification evidence with actual py_compile/validator/full-gate outputs, reran full gate successfully (`CHECK_GATE_EXIT=0`), marked FEAT-008 passing via `scripts/update-feature.py`, and reran full gate successfully again.
 
 ## Latest Verification Commands
 
 ```bash
-git rev-parse --show-toplevel && git status --short --branch && git branch --show-current && git remote -v && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+git rev-parse --show-toplevel && git status --short --branch && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output:
+Output before verification update:
 
 ```text
 /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
 ## feat/sitl-preflight-dosing...origin/feat/sitl-preflight-dosing
-feat/sitl-preflight-dosing
-origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
-origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
@@ -54,16 +47,13 @@ CHECK_GATE_EXIT=1
 ```
 
 ```bash
-python -m py_compile scripts/validate-preflight-dosing.py && python scripts/validate-preflight-dosing.py && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+python scripts/update-feature.py feature-list.json && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output:
+Output after verification update:
 
 ```text
-PASS: preflight dosing contract validated
-Validated scenarios: 3 (1 safe, 2 blocked)
-Mission spray segments: 2
-Reference target_flow_lpm: 0.600
+Updated FEAT-008 passes=true
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
@@ -71,14 +61,34 @@ PASS: preflight dosing contract validated
 Validated scenarios: 3 (1 safe, 2 blocked)
 Mission spray segments: 2
 Reference target_flow_lpm: 0.600
-FAIL: verification gate status must be PASS
-CHECK_GATE_EXIT=1
+Gate check passed
+Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
+Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
+- ROW_ENTRY entry_transit: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- SPRAY_ON row_01_left_spray: spray=LEFT speed=0.25 outputs={'pump': True, 'left_valve': True, 'right_valve': False}
+- SPRAY_TRANSITION OFF->LEFT at row_01_left_spray
+- FAULT_STOP front_obstacle during row_01_left_spray: mode=HOLD outputs={'pump': False, 'left_valve': False, 'right_valve': False} operator_review_required=True
+- SPRAY_TRANSITION LEFT->OFF at row_01_exit_off
+- ROW_EXIT row_01_exit_off: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- MISSION_END return_to_hold: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+Validated hardware BOM/pinout contract: hardware/bom-pinout.v0.json
+Validated bench ratings contract: hardware/bench-test-ratings.v0.json margin=3.3x
+Validated bench procedure contract: hardware/bench-test-procedure.v0.json tests=8
+Validated Pixhawk actuator mapping: hardware/pixhawk-actuator-mapping.v0.json
+Validated ArduRover parameter export: hardware/pixhawk-ardurover-sprayer.param
+ACTUATOR_OUTPUTS=AUX1,AUX2,AUX3,AUX4,AUX5
+PARAMETERS=BRD_PWM_COUNT,SERVO9_FUNCTION,SERVO9_MIN,SERVO9_MAX,RELAY1_PIN,RELAY1_DEFAULT,RELAY2_PIN,RELAY2_DEFAULT,RELAY3_PIN,RELAY3_DEFAULT,RELAY4_PIN,RELAY4_DEFAULT
+MISSION_EXPORT_VALIDATION_OK
+SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
+COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
+SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
+CHECK_GATE_EXIT=0
 ```
 
 ## Current Blocker
 
-FEAT-008 still fails because `stage-gates/active/FEAT-008/04-verification.md` correctly has `STATUS: FAIL`. The implementation artifacts are in place; the next missing step is final actual command-output evidence in `04-verification.md`, then setting that gate to `STATUS: PASS`.
+No FEAT-008 implementation blocker remains. FEAT-008 still needs repository integration: commit/push this branch and open or update the GitHub PR if auth/branch protection allows.
 
 ## Next Concrete Step
 
-Implement FEAT-008 task 5: update `stage-gates/active/FEAT-008/04-verification.md` with actual output from `python -m py_compile scripts/validate-preflight-dosing.py`, `python scripts/validate-preflight-dosing.py`, and `bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0`; set `STATUS: PASS`; rerun the full gate; then run `python scripts/update-feature.py feature-list.json` only if the gate succeeds.
+Commit and push FEAT-008 completion on `feat/sitl-preflight-dosing`; open/verify the PR. After FEAT-008 is merged, sync `main`, activate FEAT-009, and create FEAT-009 stage-gate contracts for the SITL position-confidence and canopy dead-reckoning fallback feature.
