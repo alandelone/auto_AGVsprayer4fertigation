@@ -50,7 +50,7 @@
       "module": "MAVLink & Mission Planner",
       "title": "Generate Mission Planner / QGC waypoint files (.plan and .waypoints)",
       "context": "Convert cucumber row spray routes into QGroundControl .plan and ArduPilot WPL 110 .waypoints files with embedded DO_SET_SERVO and DO_SET_RELAY spray triggers.",
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEAT-008",

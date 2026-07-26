@@ -1,0 +1,191 @@
+{
+  "version": "0.1.0",
+  "feature_id": "FEAT-007",
+  "mission_id": "cucumber_row_synthetic_mission_v0",
+  "description": "Deterministic synthetic Mission Planner / QGC route for cucumber row sprayer export validation. Coordinates are fake and must not be used for real navigation.",
+  "coordinate_policy": {
+    "type": "synthetic_test_only",
+    "origin_note": "All lat/lon values are near zero and intentionally non-farm-private.",
+    "forbidden_use": "Do not upload to a real vehicle without replacing with surveyed field coordinates and bench-verifying actuation."
+  },
+  "vehicle": {
+    "firmware": "ArduRover",
+    "frame": "rover",
+    "default_altitude_m": 0,
+    "acceptance_radius_m": 0.5
+  },
+  "actuator_mapping_ref": "hardware/pixhawk-actuator-mapping.v0.json",
+  "actuator_commands": {
+    "pump_pwm": {
+      "mav_cmd": "MAV_CMD_DO_SET_SERVO",
+      "command_id": 183,
+      "servo_channel": 9,
+      "off_pwm_us": 1000,
+      "spray_pwm_us": 1450
+    },
+    "left_spray_valve": {
+      "mav_cmd": "MAV_CMD_DO_SET_RELAY",
+      "command_id": 181,
+      "relay_number": 1,
+      "off_state": 0,
+      "on_state": 1
+    },
+    "right_spray_valve": {
+      "mav_cmd": "MAV_CMD_DO_SET_RELAY",
+      "command_id": 181,
+      "relay_number": 2,
+      "off_state": 0,
+      "on_state": 1
+    },
+    "agitation": {
+      "mav_cmd": "MAV_CMD_DO_SET_RELAY",
+      "command_id": 181,
+      "relay_number": 3,
+      "off_state": 0,
+      "on_state": 1,
+      "enabled_during_spray": true
+    }
+  },
+  "spray_states": {
+    "OFF": {
+      "pump_pwm_us": 1000,
+      "left_valve": 0,
+      "right_valve": 0,
+      "agitation": 0
+    },
+    "LEFT": {
+      "pump_pwm_us": 1450,
+      "left_valve": 1,
+      "right_valve": 0,
+      "agitation": 1
+    },
+    "RIGHT": {
+      "pump_pwm_us": 1450,
+      "left_valve": 0,
+      "right_valve": 1,
+      "agitation": 1
+    },
+    "BOTH": {
+      "pump_pwm_us": 1450,
+      "left_valve": 1,
+      "right_valve": 1,
+      "agitation": 1
+    }
+  },
+  "mission_items": [
+    {
+      "seq": 0,
+      "id": "HOME",
+      "type": "home",
+      "lat": 0.0001000,
+      "lon": 0.0001000,
+      "alt_m": 0,
+      "row_label": "synthetic_home",
+      "spray_state": "OFF",
+      "target_speed_mps": 0.0
+    },
+    {
+      "seq": 1,
+      "id": "WP001",
+      "type": "nav_waypoint",
+      "lat": 0.0001000,
+      "lon": 0.0001000,
+      "alt_m": 0,
+      "row_label": "staging_area",
+      "spray_state": "OFF",
+      "target_speed_mps": 0.35
+    },
+    {
+      "seq": 2,
+      "id": "WP002",
+      "type": "nav_waypoint",
+      "lat": 0.0001100,
+      "lon": 0.0001200,
+      "alt_m": 0,
+      "row_label": "row_01_entry_align",
+      "spray_state": "OFF",
+      "target_speed_mps": 0.20
+    },
+    {
+      "seq": 3,
+      "id": "WP003",
+      "type": "nav_waypoint",
+      "lat": 0.0001200,
+      "lon": 0.0001300,
+      "alt_m": 0,
+      "row_label": "row_01_left_spray_start",
+      "spray_state": "LEFT",
+      "target_speed_mps": 0.25
+    },
+    {
+      "seq": 4,
+      "id": "WP004",
+      "type": "nav_waypoint",
+      "lat": 0.0001800,
+      "lon": 0.0001300,
+      "alt_m": 0,
+      "row_label": "row_01_left_spray_end",
+      "spray_state": "LEFT",
+      "target_speed_mps": 0.25
+    },
+    {
+      "seq": 5,
+      "id": "WP005",
+      "type": "nav_waypoint",
+      "lat": 0.0001900,
+      "lon": 0.0001350,
+      "alt_m": 0,
+      "row_label": "row_01_exit_spray_off",
+      "spray_state": "OFF",
+      "target_speed_mps": 0.25
+    },
+    {
+      "seq": 6,
+      "id": "WP006",
+      "type": "nav_waypoint",
+      "lat": 0.0002000,
+      "lon": 0.0001500,
+      "alt_m": 0,
+      "row_label": "return_hold",
+      "spray_state": "OFF",
+      "target_speed_mps": 0.35
+    }
+  ],
+  "actuator_transitions": [
+    {
+      "at_item_id": "WP001",
+      "phase": "mission_start_safe_off",
+      "spray_state": "OFF",
+      "reason": "Ensure pump and valves are safe before movement."
+    },
+    {
+      "at_item_id": "WP003",
+      "phase": "row_01_spray_on",
+      "spray_state": "LEFT",
+      "reason": "Start left-side cucumber row spraying after alignment waypoint."
+    },
+    {
+      "at_item_id": "WP005",
+      "phase": "row_01_spray_off_before_exit",
+      "spray_state": "OFF",
+      "reason": "Turn pump and spray valves off before transit/return segment."
+    },
+    {
+      "at_item_id": "WP006",
+      "phase": "mission_end_safe_off",
+      "spray_state": "OFF",
+      "reason": "Keep actuators off at hold/mission end."
+    }
+  ],
+  "required_exports": {
+    "qgc_plan": "missions/exports/cucumber-row-mission.plan",
+    "ardupilot_wpl110": "missions/exports/cucumber-row-mission.waypoints"
+  },
+  "safety_invariants": [
+    "Mission starts with explicit OFF actuator commands.",
+    "Mission ends with explicit OFF actuator commands.",
+    "Pump PWM OFF is 1000 us from FEAT-006 mapping.",
+    "Left/right relay OFF state is 0 from FEAT-006 mapping.",
+    "No command bypasses the physical emergency stop cutoff."
+  ]
+}
