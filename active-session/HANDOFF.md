@@ -4,11 +4,14 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-`FEAT-007` is active on branch `feat/mission-source-contract` with PR #4 open against `main`. FEAT-007 is PASSING locally: verification evidence is in `stage-gates/active/FEAT-007/04-verification.md`, `python scripts/update-feature.py feature-list.json` has marked FEAT-007 passing, and the full repo gate exits 0.
+PR #4 for FEAT-007 was verified MERGED on GitHub. Local `main` was fast-forwarded to `origin/main`, and the next branch `feat/sitl-preflight-dosing` was created for FEAT-008.
+
+`active_feature` now points to `FEAT-008`. FEAT-008 stage-gate contracts exist, but FEAT-008 is intentionally failing until the deterministic SITL preflight/dosing contract, validator, docs, and gate wiring are implemented.
 
 Features status:
 - FEAT-001 through FEAT-007: PASSING.
-- FEAT-008 through FEAT-010: PLANNED (SITL preflight & dosing, SITL dead reckoning & position gate, SITL fault recovery & telemetry logging).
+- FEAT-008: ACTIVE / FAILING (stage-gate contracts initialized; implementation pending).
+- FEAT-009 through FEAT-010: PLANNED.
 
 ## Key Goal Clarification
 
@@ -18,9 +21,8 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 
 - FEAT-006 is complete and marked passing through `scripts/update-feature.py`.
 - FEAT-007 stage-gate contracts, mission source contract, Mission Planner/QGC exporters, exported artifacts, validator wiring, verification evidence, and feature-list pass update are complete.
-- FEAT-007 branch `feat/mission-source-contract` is pushed and PR #4 is open: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
-- 2026-07-26T00:09:26Z heartbeat: read hot context, verified branch/remotes, reran the full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #4 remains OPEN with no status checks and `mergeStateStatus=CLEAN`. No implementation changes were made because FEAT-007 is already passing and awaiting integration.
-- 2026-07-26T03:10:42Z heartbeat: read hot context, verified repo root/branch/remotes, reran the full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #4 remains OPEN with no status checks and `mergeStateStatus=UNKNOWN`. No implementation changes were made because FEAT-007 is already passing and awaiting integration.
+- FEAT-007 PR #4 was verified MERGED: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
+- 2026-07-26T06:14:17Z heartbeat: read hot context, verified repo root/status/remotes, reran FEAT-007 gate successfully before branch transition (`CHECK_GATE_EXIT=0`), verified PR #4 is MERGED, fast-forwarded local `main`, created branch `feat/sitl-preflight-dosing`, changed `active_feature` to FEAT-008, created FEAT-008 stage-gate contracts, and captured the current failing gate evidence (`CHECK_GATE_EXIT=1`).
 
 ## Latest Verification Commands
 
@@ -28,7 +30,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 git rev-parse --show-toplevel && git status --short --branch && git remote -v && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output:
+Output before moving to FEAT-008:
 
 ```text
 /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
@@ -63,27 +65,33 @@ CHECK_GATE_EXIT=0
 ```
 
 ```bash
-gh auth status && gh pr view 4 --json number,state,url,mergeStateStatus,statusCheckRollup,headRefName,baseRefName
+gh pr view 4 --json number,state,url,mergeStateStatus,statusCheckRollup,headRefName,baseRefName
 ```
 
 Output:
 
 ```text
-github.com
-  ✓ Logged in to github.com account alanworkliaolo (/home/ubuntu/.hermes/profiles/evergreen4bot/home/.config/gh/hosts.yml)
-  - Active account: true
-  - Git operations protocol: https
-  - Token: gho_************************************
-  - Token scopes: 'gist', 'read:org', 'repo'
-{"baseRefName":"main","headRefName":"feat/mission-source-contract","mergeStateStatus":"CLEAN","number":4,"state":"OPEN","statusCheckRollup":[],"url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4"}
+{"baseRefName":"main","headRefName":"feat/mission-source-contract","mergeStateStatus":"UNKNOWN","number":4,"state":"MERGED","statusCheckRollup":[],"url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4"}
+```
+
+```bash
+bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+```
+
+Output after moving active feature to FEAT-008:
+
+```text
+Initializing auto_AGVsprayer4fertigation workspace...
+No build or test toolchain is configured yet.
+Add setup commands here when source code is introduced.
+FAIL: verification gate status must be PASS
+CHECK_GATE_EXIT=1
 ```
 
 ## Current Blocker
 
-FEAT-007 has no local code blocker and the full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN as of 2026-07-26T03:10:42Z, with no reported status checks and `mergeStateStatus=UNKNOWN`. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
-
-Heartbeat cron job `0248354e8f86` is paused as of 2026-07-24T07:09:24Z to avoid repeated blocker/status spam. Resume it only after the PR/integration blocker is solved.
+FEAT-008 has stage-gate contracts but no implementation yet. The full gate fails because `stage-gates/active/FEAT-008/04-verification.md` correctly has `STATUS: FAIL` until actual preflight/dosing validation exists and passes.
 
 ## Next Concrete Step
 
-Review/merge PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4. After FEAT-007 lands on `main`, sync the local default branch as appropriate, create the next branch for FEAT-008, update `active_feature`, and resume heartbeat if continued autonomous work is wanted.
+Implement FEAT-008 task 1: create `sitl/preflight-dosing.v0.json` with explicit preflight checks, dosing inputs, expected outcomes, and at least one blocked unsafe condition. Then add `scripts/validate-preflight-dosing.py`, wire it into `scripts/check-gate.sh`, update docs/evidence, and only mark FEAT-008 passing after the full gate exits 0.
