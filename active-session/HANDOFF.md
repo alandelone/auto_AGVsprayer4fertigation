@@ -38,17 +38,21 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 
 - 2026-07-27T18:51:44Z heartbeat: committed/pushed handoff update as `e7bfa40` to origin/feat/sitl-preflight-dosing; post-push PR #5 should recalculate merge state.
 
+- 2026-07-27T21:53:47Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
+
 ## Latest Verification Commands
 
 ```bash
-git rev-parse --show-toplevel && git status --short --branch && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+git rev-parse --show-toplevel && git status --short --branch && git remote -v && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output from 2026-07-27T18:51:44Z heartbeat:
+Output from 2026-07-27T21:53:47Z heartbeat:
 
 ```text
 /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
 ## feat/sitl-preflight-dosing...origin/feat/sitl-preflight-dosing
+origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
+origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
@@ -82,7 +86,7 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-No FEAT-008 implementation blocker remains. FEAT-008 is passing and waiting for PR #5 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5. Latest verified PR state: OPEN, no status checks, `mergeStateStatus=UNKNOWN`.
+No FEAT-008 implementation blocker remains. FEAT-008 is passing and waiting for PR #5 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5. Latest verified PR state: OPEN, no status checks, `mergeStateStatus=CLEAN`.
 
 ## Next Concrete Step
 
