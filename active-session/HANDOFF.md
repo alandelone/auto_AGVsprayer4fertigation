@@ -36,6 +36,8 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 
 - 2026-07-27T18:51:44Z heartbeat: read hot context, verified repo root/status, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=UNKNOWN` and no status checks.
 
+- 2026-07-27T18:51:44Z heartbeat: committed/pushed handoff update as `e7bfa40` to origin/feat/sitl-preflight-dosing; post-push PR #5 should recalculate merge state.
+
 ## Latest Verification Commands
 
 ```bash
