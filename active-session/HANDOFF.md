@@ -24,6 +24,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - FEAT-008 stage-gate contracts, preflight/dosing scenario contract, deterministic validator, gate wiring, docs, final verification evidence, and feature-list pass update are complete.
 - 2026-07-26T21:29:23Z heartbeat: read hot context, verified repo root/status, reran FEAT-008 gate initially failing (`CHECK_GATE_EXIT=1`), updated final verification evidence with actual py_compile/validator/full-gate outputs, reran full gate successfully (`CHECK_GATE_EXIT=0`), marked FEAT-008 passing via `scripts/update-feature.py`, and reran full gate successfully again.
 - 2026-07-26T21:29:23Z heartbeat: committed FEAT-008 completion as `6f4f76c`, pushed `feat/sitl-preflight-dosing` to origin, opened PR #5, and verified PR #5 is OPEN with `mergeStateStatus=CLEAN` and no status checks: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5.
+- 2026-07-27T00:32:40Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
 
 ## Latest Verification Commands
 
@@ -88,7 +89,7 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-No FEAT-008 implementation blocker remains. FEAT-008 is waiting for PR #5 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5.
+No FEAT-008 implementation blocker remains. FEAT-008 is passing and waiting for PR #5 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5.
 
 ## Next Concrete Step
 
