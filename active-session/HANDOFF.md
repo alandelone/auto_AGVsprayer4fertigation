@@ -27,6 +27,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - 2026-07-27T00:32:40Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
 - 2026-07-27T03:34:47Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
 - 2026-07-27T03:34:47Z heartbeat: committed/pushed handoff update as `4dfd443`; post-push PR #5 remained OPEN with no status checks and `mergeStateStatus=UNKNOWN` while GitHub recalculates.
+- 2026-07-27T06:37:32Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
 
 ## Latest Verification Commands
 
@@ -34,30 +35,11 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 git rev-parse --show-toplevel && git status --short --branch && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output before verification update:
+Output from 2026-07-27T06:37:32Z heartbeat:
 
 ```text
 /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
 ## feat/sitl-preflight-dosing...origin/feat/sitl-preflight-dosing
-Initializing auto_AGVsprayer4fertigation workspace...
-No build or test toolchain is configured yet.
-Add setup commands here when source code is introduced.
-PASS: preflight dosing contract validated
-Validated scenarios: 3 (1 safe, 2 blocked)
-Mission spray segments: 2
-Reference target_flow_lpm: 0.600
-FAIL: verification gate status must be PASS
-CHECK_GATE_EXIT=1
-```
-
-```bash
-python scripts/update-feature.py feature-list.json && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
-```
-
-Output after verification update:
-
-```text
-Updated FEAT-008 passes=true
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
