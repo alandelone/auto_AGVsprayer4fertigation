@@ -6,11 +6,11 @@ Repository memory scaffold uses the SSOT design. `feature-list.json` owns `activ
 
 Active branch: `feat/sitl-position-confidence`.
 
-`active_feature` now points to `FEAT-009`. FEAT-001 through FEAT-008 are passing. FEAT-009 is active and intentionally failing because only the stage-gate contracts exist so far; implementation artifacts are not complete.
+`active_feature` points to `FEAT-009`. FEAT-001 through FEAT-008 are passing. FEAT-009 is active and intentionally failing because implementation is in progress: the scenario contract now exists, but the deterministic validator, docs, check-gate wiring, and PASS verification evidence are not complete.
 
 Features status:
 - FEAT-001 through FEAT-008: PASSING.
-- FEAT-009: ACTIVE / failing gate until implementation and verification evidence are added.
+- FEAT-009: ACTIVE / failing gate until validator/docs/evidence are added.
 - FEAT-010: PLANNED / not passing.
 
 ## Key Goal Clarification
@@ -26,20 +26,18 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - FEAT-008 PR #5 was verified MERGED on 2026-07-28T10:03:55Z: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5.
 - 2026-07-28T10:03:55Z heartbeat: read hot context, verified repo root/status/remotes, reran the FEAT-008 gate successfully (`CHECK_GATE_EXIT=0`), verified PR #5 is MERGED, fast-forwarded local `main` to `origin/main`, created branch `feat/sitl-position-confidence`, activated FEAT-009, and created FEAT-009 discovery/design/execution/verification stage-gate contracts.
 - 2026-07-28T10:03:55Z heartbeat: reran the active FEAT-009 gate; it failed as intended with `CHECK_GATE_EXIT=1` because `04-verification.md` contains exact `STATUS: FAIL` until implementation artifacts and actual evidence are complete.
+- 2026-07-28T13:10:25Z heartbeat: created `sitl/position-confidence.v0.json` with thresholds, safe actuator outputs, and six deterministic scenarios covering RTK confident, canopy dead-reckoning accepted, stale GPS HOLD, IMU/odometer disagreement HOLD, invalid ultrasonic HOLD, and fallback budget expired HOLD. JSON syntax/smoke validation passed.
 
 ## Latest Verification Commands
 
 ```bash
-git rev-parse --show-toplevel && git status --short --branch && git remote -v && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+git status --short --branch && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output from 2026-07-28T10:03:55Z before FEAT-009 activation:
+Output from 2026-07-28T13:10:25Z before contract creation:
 
 ```text
-/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
-## feat/sitl-preflight-dosing...origin/feat/sitl-preflight-dosing
-origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
-origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
+## feat/sitl-position-confidence...origin/feat/sitl-position-confidence
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
@@ -47,37 +45,27 @@ PASS: preflight dosing contract validated
 Validated scenarios: 3 (1 safe, 2 blocked)
 Mission spray segments: 2
 Reference target_flow_lpm: 0.600
-Gate check passed
-Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
-Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
-- ROW_ENTRY entry_transit: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
-- SPRAY_ON row_01_left_spray: spray=LEFT speed=0.25 outputs={'pump': True, 'left_valve': True, 'right_valve': False}
-- SPRAY_TRANSITION OFF->LEFT at row_01_left_spray
-- FAULT_STOP front_obstacle during row_01_left_spray: mode=HOLD outputs={'pump': False, 'left_valve': False, 'right_valve': False} operator_review_required=True
-- SPRAY_TRANSITION LEFT->OFF at row_01_exit_off
-- ROW_EXIT row_01_exit_off: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
-- MISSION_END return_to_hold: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
-Validated hardware BOM/pinout contract: hardware/bom-pinout.v0.json
-Validated bench ratings contract: hardware/bench-test-ratings.v0.json margin=3.3x
-Validated bench procedure contract: hardware/bench-test-procedure.v0.json tests=8
-Validated Pixhawk actuator mapping: hardware/pixhawk-actuator-mapping.v0.json
-Validated ArduRover parameter export: hardware/pixhawk-ardurover-sprayer.param
-ACTUATOR_OUTPUTS=AUX1,AUX2,AUX3,AUX4,AUX5
-PARAMETERS=BRD_PWM_COUNT,SERVO9_FUNCTION,SERVO9_MIN,SERVO9_MAX,RELAY1_PIN,RELAY1_DEFAULT,RELAY2_PIN,RELAY2_DEFAULT,RELAY3_PIN,RELAY3_DEFAULT,RELAY4_PIN,RELAY4_DEFAULT
-MISSION_EXPORT_VALIDATION_OK
-SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
-COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
-SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
-CHECK_GATE_EXIT=0
+FAIL: verification gate status must be PASS
+CHECK_GATE_EXIT=1
 ```
 
 ```bash
+python - <<'PY'
+import json
+from pathlib import Path
+p=Path('sitl/position-confidence.v0.json')
+data=json.loads(p.read_text())
+print(f"POSITION_CONFIDENCE_CONTRACT_OK feature={data['feature_id']} scenarios={len(data['scenarios'])}")
+print('SCENARIOS=' + ','.join(s['id'] for s in data['scenarios']))
+PY
 bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output from 2026-07-28T10:03:55Z after FEAT-009 activation:
+Output from 2026-07-28T13:10:25Z after contract creation:
 
 ```text
+POSITION_CONFIDENCE_CONTRACT_OK feature=FEAT-009 scenarios=6
+SCENARIOS=nominal_rtk_confident_row_spray,canopy_dead_reckoning_accepted,stale_gps_sample_hold,imu_odometer_disagreement_hold,ultrasonic_row_cue_invalid_hold,fallback_budget_expired_hold
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
@@ -91,8 +79,8 @@ CHECK_GATE_EXIT=1
 
 ## Current Blocker
 
-FEAT-009 needs implementation artifacts before it can pass: `sitl/position-confidence.v0.json`, `scripts/validate-position-confidence.py`, `docs/position-confidence-fallback.md`, `scripts/check-gate.sh` wiring, and actual verification output in `stage-gates/active/FEAT-009/04-verification.md`.
+FEAT-009 still needs `scripts/validate-position-confidence.py`, `docs/position-confidence-fallback.md`, `scripts/check-gate.sh` wiring, and actual verification output in `stage-gates/active/FEAT-009/04-verification.md` before it can pass.
 
 ## Next Concrete Step
 
-Implement `sitl/position-confidence.v0.json` with deterministic RTK-confident, canopy-dead-reckoning, stale GPS, sensor disagreement, invalid ultrasonic, and fallback-expired scenarios, then build `scripts/validate-position-confidence.py` against that contract.
+Implement `scripts/validate-position-confidence.py` to load `sitl/position-confidence.v0.json`, validate required fields/thresholds, compute RTK/dead-reckoning/HOLD decisions, enforce safe outputs on HOLD cases, and print deterministic scenario/decision counts.

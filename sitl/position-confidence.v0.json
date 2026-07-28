@@ -1,0 +1,325 @@
+{
+  "version": "0.1.0",
+  "feature_id": "FEAT-009",
+  "scope": "Deterministic SITL position-confidence and bounded canopy dead-reckoning fallback contract for cucumber-row AGV sprayer missions.",
+  "sources": {
+    "mission_export": "missions/cucumber-row-mission.v0.json",
+    "actuator_mapping": "hardware/pixhawk-actuator-mapping.v0.json",
+    "preflight_dosing": "sitl/preflight-dosing.v0.json"
+  },
+  "units": {
+    "gps_age_s": "seconds",
+    "hdop": "dimensionless",
+    "distance_m": "meters",
+    "heading_deg": "degrees",
+    "duration_s": "seconds",
+    "speed_mps": "meters_per_second"
+  },
+  "thresholds": {
+    "accepted_rtk_fix_types": [
+      "RTK_FIXED",
+      "RTK_FLOAT"
+    ],
+    "max_hdop": 1.2,
+    "max_gps_age_s": 1.5,
+    "max_odom_vs_mission_drift_m": 0.35,
+    "max_imu_odom_heading_divergence_deg": 8,
+    "ultrasonic_valid_range_m": {
+      "min": 0.18,
+      "max": 1.2
+    },
+    "row_width_m": 1.2,
+    "max_ultrasonic_row_width_error_m": 0.25,
+    "max_fallback_duration_s": 6,
+    "max_fallback_distance_m": 1.5
+  },
+  "states": {
+    "RTK_CONFIDENT": "RTK fix is fresh and accurate; IMU, odometer, and ultrasonic row cues agree with the mission segment.",
+    "DEAD_RECKONING_ACTIVE": "GPS is degraded under canopy, but IMU/odometer/ultrasonic cues agree and fallback duration/distance budgets are not exceeded.",
+    "SAFE_HOLD": "Position confidence is unsafe; rover must hold and pump/valve outputs must be off."
+  },
+  "safe_outputs": {
+    "pump_pwm_us": 1000,
+    "left_spray_valve": 0,
+    "right_spray_valve": 0
+  },
+  "scenarios": [
+    {
+      "id": "nominal_rtk_confident_row_spray",
+      "description": "Fresh RTK_FIXED fix with agreeing odometry, IMU, and row-distance cues allows continued left-row spraying.",
+      "mission_segment": {
+        "id": "row_01_left_spray",
+        "spray_zone": "LEFT",
+        "expected_heading_deg": 0,
+        "distance_into_segment_m": 3.2
+      },
+      "telemetry": {
+        "gps": {
+          "fix_type": "RTK_FIXED",
+          "hdop": 0.7,
+          "age_s": 0.4
+        },
+        "imu": {
+          "heading_deg": 1.0
+        },
+        "odometer": {
+          "heading_deg": 0.5,
+          "distance_into_segment_m": 3.1
+        },
+        "ultrasonic": {
+          "left_m": 0.58,
+          "right_m": 0.63
+        },
+        "fallback": {
+          "active": false,
+          "duration_s": 0,
+          "distance_m": 0
+        },
+        "speed_mps": 0.25
+      },
+      "expected": {
+        "decision": "RTK_CONFIDENT",
+        "mode": "AUTO",
+        "spray_allowed": true,
+        "safe_outputs_required": false,
+        "reason_codes": []
+      }
+    },
+    {
+      "id": "canopy_dead_reckoning_accepted",
+      "description": "GPS drops to 3D_FIX under canopy, but local sensors agree and fallback budgets remain bounded, so dead reckoning may continue briefly.",
+      "mission_segment": {
+        "id": "row_01_left_spray",
+        "spray_zone": "LEFT",
+        "expected_heading_deg": 0,
+        "distance_into_segment_m": 5.0
+      },
+      "telemetry": {
+        "gps": {
+          "fix_type": "3D_FIX",
+          "hdop": 2.4,
+          "age_s": 0.8
+        },
+        "imu": {
+          "heading_deg": 2.0
+        },
+        "odometer": {
+          "heading_deg": 1.0,
+          "distance_into_segment_m": 5.2
+        },
+        "ultrasonic": {
+          "left_m": 0.56,
+          "right_m": 0.66
+        },
+        "fallback": {
+          "active": true,
+          "duration_s": 3,
+          "distance_m": 0.75
+        },
+        "speed_mps": 0.25
+      },
+      "expected": {
+        "decision": "DEAD_RECKONING_ACTIVE",
+        "mode": "AUTO",
+        "spray_allowed": true,
+        "safe_outputs_required": false,
+        "reason_codes": [
+          "gps_degraded_local_sensors_agree"
+        ]
+      }
+    },
+    {
+      "id": "stale_gps_sample_hold",
+      "description": "GPS sample age exceeds freshness threshold; the rover must hold with sprayer outputs off instead of using stale position data.",
+      "mission_segment": {
+        "id": "row_01_left_spray",
+        "spray_zone": "LEFT",
+        "expected_heading_deg": 0,
+        "distance_into_segment_m": 4.0
+      },
+      "telemetry": {
+        "gps": {
+          "fix_type": "RTK_FIXED",
+          "hdop": 0.8,
+          "age_s": 2.3
+        },
+        "imu": {
+          "heading_deg": 1.0
+        },
+        "odometer": {
+          "heading_deg": 1.5,
+          "distance_into_segment_m": 4.1
+        },
+        "ultrasonic": {
+          "left_m": 0.59,
+          "right_m": 0.61
+        },
+        "fallback": {
+          "active": false,
+          "duration_s": 0,
+          "distance_m": 0
+        },
+        "speed_mps": 0.25
+      },
+      "expected": {
+        "decision": "SAFE_HOLD",
+        "mode": "HOLD",
+        "spray_allowed": false,
+        "safe_outputs_required": true,
+        "safe_outputs": {
+          "pump_pwm_us": 1000,
+          "left_spray_valve": 0,
+          "right_spray_valve": 0
+        },
+        "reason_codes": [
+          "gps_stale"
+        ]
+      }
+    },
+    {
+      "id": "imu_odometer_disagreement_hold",
+      "description": "GPS is degraded and heading disagreement between IMU and wheel odometry exceeds the dead-reckoning threshold.",
+      "mission_segment": {
+        "id": "row_01_left_spray",
+        "spray_zone": "LEFT",
+        "expected_heading_deg": 0,
+        "distance_into_segment_m": 5.0
+      },
+      "telemetry": {
+        "gps": {
+          "fix_type": "3D_FIX",
+          "hdop": 2.0,
+          "age_s": 0.7
+        },
+        "imu": {
+          "heading_deg": 14.0
+        },
+        "odometer": {
+          "heading_deg": 1.0,
+          "distance_into_segment_m": 5.1
+        },
+        "ultrasonic": {
+          "left_m": 0.57,
+          "right_m": 0.64
+        },
+        "fallback": {
+          "active": true,
+          "duration_s": 2,
+          "distance_m": 0.5
+        },
+        "speed_mps": 0.25
+      },
+      "expected": {
+        "decision": "SAFE_HOLD",
+        "mode": "HOLD",
+        "spray_allowed": false,
+        "safe_outputs_required": true,
+        "safe_outputs": {
+          "pump_pwm_us": 1000,
+          "left_spray_valve": 0,
+          "right_spray_valve": 0
+        },
+        "reason_codes": [
+          "imu_odom_heading_disagreement"
+        ]
+      }
+    },
+    {
+      "id": "ultrasonic_row_cue_invalid_hold",
+      "description": "A row-distance sensor reads outside the valid range; fallback is unsafe and must stop spraying.",
+      "mission_segment": {
+        "id": "row_01_left_spray",
+        "spray_zone": "LEFT",
+        "expected_heading_deg": 0,
+        "distance_into_segment_m": 5.0
+      },
+      "telemetry": {
+        "gps": {
+          "fix_type": "3D_FIX",
+          "hdop": 2.2,
+          "age_s": 0.9
+        },
+        "imu": {
+          "heading_deg": 1.0
+        },
+        "odometer": {
+          "heading_deg": 1.5,
+          "distance_into_segment_m": 5.0
+        },
+        "ultrasonic": {
+          "left_m": 0.05,
+          "right_m": 0.62
+        },
+        "fallback": {
+          "active": true,
+          "duration_s": 2,
+          "distance_m": 0.5
+        },
+        "speed_mps": 0.25
+      },
+      "expected": {
+        "decision": "SAFE_HOLD",
+        "mode": "HOLD",
+        "spray_allowed": false,
+        "safe_outputs_required": true,
+        "safe_outputs": {
+          "pump_pwm_us": 1000,
+          "left_spray_valve": 0,
+          "right_spray_valve": 0
+        },
+        "reason_codes": [
+          "ultrasonic_invalid"
+        ]
+      }
+    },
+    {
+      "id": "fallback_budget_expired_hold",
+      "description": "Dead reckoning has exceeded both duration and distance budgets, requiring HOLD even if local sensors still agree.",
+      "mission_segment": {
+        "id": "row_01_left_spray",
+        "spray_zone": "LEFT",
+        "expected_heading_deg": 0,
+        "distance_into_segment_m": 7.0
+      },
+      "telemetry": {
+        "gps": {
+          "fix_type": "3D_FIX",
+          "hdop": 2.1,
+          "age_s": 1.0
+        },
+        "imu": {
+          "heading_deg": 2.0
+        },
+        "odometer": {
+          "heading_deg": 1.0,
+          "distance_into_segment_m": 7.2
+        },
+        "ultrasonic": {
+          "left_m": 0.58,
+          "right_m": 0.64
+        },
+        "fallback": {
+          "active": true,
+          "duration_s": 7,
+          "distance_m": 1.8
+        },
+        "speed_mps": 0.25
+      },
+      "expected": {
+        "decision": "SAFE_HOLD",
+        "mode": "HOLD",
+        "spray_allowed": false,
+        "safe_outputs_required": true,
+        "safe_outputs": {
+          "pump_pwm_us": 1000,
+          "left_spray_valve": 0,
+          "right_spray_valve": 0
+        },
+        "reason_codes": [
+          "fallback_duration_exceeded",
+          "fallback_distance_exceeded"
+        ]
+      }
+    }
+  ]
+}
