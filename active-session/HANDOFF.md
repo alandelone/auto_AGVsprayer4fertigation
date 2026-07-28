@@ -6,11 +6,11 @@ Repository memory scaffold uses the SSOT design. `feature-list.json` owns `activ
 
 Active branch: `feat/sitl-position-confidence`.
 
-`active_feature` points to `FEAT-009`. FEAT-001 through FEAT-008 are passing. FEAT-009 is active and intentionally failing because implementation is in progress: the scenario contract, deterministic validator, and fallback documentation now exist; direct validation passes, but `scripts/check-gate.sh` wiring and final PASS verification evidence are not complete.
+`active_feature` points to `FEAT-009`. FEAT-001 through FEAT-008 are passing. FEAT-009 is active and intentionally failing because implementation is in progress: the scenario contract, deterministic validator, fallback documentation, and `scripts/check-gate.sh` wiring now exist; final PASS verification evidence is not complete.
 
 Features status:
 - FEAT-001 through FEAT-008: PASSING.
-- FEAT-009: ACTIVE / failing gate until check-gate wiring and final evidence are added.
+- FEAT-009: ACTIVE / failing gate until final verification evidence is added.
 - FEAT-010: PLANNED / not passing.
 
 ## Key Goal Clarification
@@ -30,6 +30,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - 2026-07-28T13:10:25Z heartbeat: committed the contract and handoff updates as `a4feeaa` and pushed `origin/feat/sitl-position-confidence` successfully.
 - 2026-07-28T16:16:27Z heartbeat: implemented `scripts/validate-position-confidence.py`; direct validator execution passes and confirms six scenarios with decision counts `RTK_CONFIDENT=1`, `DEAD_RECKONING_ACTIVE=1`, `SAFE_HOLD=4`.
 - 2026-07-28T19:22:16Z heartbeat: added `docs/position-confidence-fallback.md` documenting FEAT-009 states, thresholds, actuator safety behavior, and SITL/companion integration path, and indexed it in `docs/project-index.md`. Direct validator and documentation structure checks passed; full repo gate still fails closed until check-gate wiring and PASS evidence are done.
+- 2026-07-28T22:26:34Z heartbeat: wired `scripts/check-gate.sh` to run `scripts/validate-position-confidence.py` before active verification-status checking. `py_compile`, direct validator execution, and full gate rerun confirmed the validator now appears in gate output; full repo gate still fails closed until FEAT-009 `04-verification.md` is updated to `STATUS: PASS` with captured evidence.
 
 ## Latest Verification Commands
 
@@ -74,6 +75,34 @@ DOC_INDEX_OK
 ```
 
 ```bash
+python -m py_compile scripts/validate-position-confidence.py && python scripts/validate-position-confidence.py sitl/position-confidence.v0.json && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+```
+
+Output from 2026-07-28T22:26:34Z after check-gate wiring:
+
+```text
+PASS: position confidence contract validated
+Validated scenarios: 6 (2 continue, 4 safe_hold)
+Decision counts: RTK_CONFIDENT=1 DEAD_RECKONING_ACTIVE=1 SAFE_HOLD=4
+Mission spray segments: 2
+Fallback budget: 6.0s / 1.500m
+Initializing auto_AGVsprayer4fertigation workspace...
+No build or test toolchain is configured yet.
+Add setup commands here when source code is introduced.
+PASS: preflight dosing contract validated
+Validated scenarios: 3 (1 safe, 2 blocked)
+Mission spray segments: 2
+Reference target_flow_lpm: 0.600
+PASS: position confidence contract validated
+Validated scenarios: 6 (2 continue, 4 safe_hold)
+Decision counts: RTK_CONFIDENT=1 DEAD_RECKONING_ACTIVE=1 SAFE_HOLD=4
+Mission spray segments: 2
+Fallback budget: 6.0s / 1.500m
+FAIL: verification gate status must be PASS
+CHECK_GATE_EXIT=1
+```
+
+```bash
 git status --short --branch && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
@@ -98,8 +127,8 @@ CHECK_GATE_EXIT=1
 
 ## Current Blocker
 
-FEAT-009 still needs `scripts/check-gate.sh` wiring for `scripts/validate-position-confidence.py`, then actual command/output evidence pasted into `stage-gates/active/FEAT-009/04-verification.md` with `STATUS: PASS` before the feature can be marked passing.
+FEAT-009 still needs actual command/output evidence pasted into `stage-gates/active/FEAT-009/04-verification.md` with `STATUS: PASS` before the feature can be marked passing.
 
 ## Next Concrete Step
 
-Wire `scripts/validate-position-confidence.py` into `scripts/check-gate.sh`, rerun the targeted validator and full gate, then update `stage-gates/active/FEAT-009/04-verification.md` with actual captured output in a follow-up component.
+Update `stage-gates/active/FEAT-009/04-verification.md` with actual captured output from the targeted validator and full gate, set `STATUS: PASS`, rerun `bash scripts/check-gate.sh`, then use `python scripts/update-feature.py feature-list.json` only after the gate succeeds.
