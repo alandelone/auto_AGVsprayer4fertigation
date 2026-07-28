@@ -42,6 +42,8 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 
 - 2026-07-28T00:55:51Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
 
+- 2026-07-28T00:55:51Z heartbeat: committed/pushed handoff update as `c447c14` to origin/feat/sitl-preflight-dosing; post-push PR #5 remains OPEN with no status checks and `mergeStateStatus=UNKNOWN` while GitHub recalculates.
+
 ## Latest Verification Commands
 
 ```bash
@@ -88,7 +90,7 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-No FEAT-008 implementation blocker remains. FEAT-008 is passing and waiting for PR #5 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5. Latest verified PR state from 2026-07-28T00:55:51Z: OPEN, no status checks, `mergeStateStatus=CLEAN`.
+No FEAT-008 implementation blocker remains. FEAT-008 is passing and waiting for PR #5 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5. Latest post-push verified PR state from 2026-07-28T00:55:51Z: OPEN, no status checks, `mergeStateStatus=UNKNOWN` while GitHub recalculates.
 
 ## Next Concrete Step
 
