@@ -6,11 +6,11 @@ Repository memory scaffold uses the SSOT design. `feature-list.json` owns `activ
 
 Active branch: `feat/sitl-position-confidence`.
 
-`active_feature` points to `FEAT-009`. FEAT-001 through FEAT-008 are passing. FEAT-009 is active and intentionally failing because implementation is in progress: the scenario contract and deterministic validator now exist and pass direct validation, but docs, check-gate wiring, and PASS verification evidence are not complete.
+`active_feature` points to `FEAT-009`. FEAT-001 through FEAT-008 are passing. FEAT-009 is active and intentionally failing because implementation is in progress: the scenario contract, deterministic validator, and fallback documentation now exist; direct validation passes, but `scripts/check-gate.sh` wiring and final PASS verification evidence are not complete.
 
 Features status:
 - FEAT-001 through FEAT-008: PASSING.
-- FEAT-009: ACTIVE / failing gate until docs, gate wiring, and final evidence are added.
+- FEAT-009: ACTIVE / failing gate until check-gate wiring and final evidence are added.
 - FEAT-010: PLANNED / not passing.
 
 ## Key Goal Clarification
@@ -29,6 +29,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - 2026-07-28T13:10:25Z heartbeat: created `sitl/position-confidence.v0.json` with thresholds, safe actuator outputs, and six deterministic scenarios covering RTK confident, canopy dead-reckoning accepted, stale GPS HOLD, IMU/odometer disagreement HOLD, invalid ultrasonic HOLD, and fallback budget expired HOLD. JSON syntax/smoke validation passed.
 - 2026-07-28T13:10:25Z heartbeat: committed the contract and handoff updates as `a4feeaa` and pushed `origin/feat/sitl-position-confidence` successfully.
 - 2026-07-28T16:16:27Z heartbeat: implemented `scripts/validate-position-confidence.py`; direct validator execution passes and confirms six scenarios with decision counts `RTK_CONFIDENT=1`, `DEAD_RECKONING_ACTIVE=1`, `SAFE_HOLD=4`.
+- 2026-07-28T19:22:16Z heartbeat: added `docs/position-confidence-fallback.md` documenting FEAT-009 states, thresholds, actuator safety behavior, and SITL/companion integration path, and indexed it in `docs/project-index.md`. Direct validator and documentation structure checks passed; full repo gate still fails closed until check-gate wiring and PASS evidence are done.
 
 ## Latest Verification Commands
 
@@ -36,7 +37,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 git rev-parse --show-toplevel && git status --short --branch && git remote -v && git diff --stat && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output from 2026-07-28T16:16:27Z before validator creation:
+Output from 2026-07-28T19:22:16Z before doc creation:
 
 ```text
 /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
@@ -55,10 +56,10 @@ CHECK_GATE_EXIT=1
 ```
 
 ```bash
-python -m py_compile scripts/validate-position-confidence.py && python scripts/validate-position-confidence.py sitl/position-confidence.v0.json
+python -m py_compile scripts/validate-position-confidence.py && python scripts/validate-position-confidence.py sitl/position-confidence.v0.json && python -c "from pathlib import Path; p=Path('docs/position-confidence-fallback.md'); text=p.read_text(encoding='utf-8'); required=['## Scope','## Inputs and Units','## Configured Thresholds','## Decision States','## Actuator Safety Behavior','## SITL / Companion Integration Path']; missing=[h for h in required if h not in text]; forbidden=[w for w in ['TBD','TODO','placeholder','Expected output'] if w.lower() in text.lower()]; index=Path('docs/project-index.md').read_text(encoding='utf-8'); print(f'DOC_EXISTS={p.exists()} DOC_BYTES={p.stat().st_size}'); print('DOC_REQUIRED_HEADINGS_OK' if not missing else 'DOC_MISSING_HEADINGS='+','.join(missing)); print('DOC_PLACEHOLDER_CHECK_OK' if not forbidden else 'DOC_FORBIDDEN_TERMS='+','.join(forbidden)); print('DOC_INDEX_OK' if 'docs/position-confidence-fallback.md' in index else 'DOC_INDEX_MISSING'); raise SystemExit(1 if missing or forbidden or 'docs/position-confidence-fallback.md' not in index else 0)"
 ```
 
-Output from 2026-07-28T16:16:27Z after validator creation:
+Output from 2026-07-28T19:22:16Z after doc creation:
 
 ```text
 PASS: position confidence contract validated
@@ -66,17 +67,24 @@ Validated scenarios: 6 (2 continue, 4 safe_hold)
 Decision counts: RTK_CONFIDENT=1 DEAD_RECKONING_ACTIVE=1 SAFE_HOLD=4
 Mission spray segments: 2
 Fallback budget: 6.0s / 1.500m
+DOC_EXISTS=True DOC_BYTES=6072
+DOC_REQUIRED_HEADINGS_OK
+DOC_PLACEHOLDER_CHECK_OK
+DOC_INDEX_OK
 ```
 
 ```bash
 git status --short --branch && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output from 2026-07-28T16:16:27Z after validator creation:
+Output from 2026-07-28T19:22:16Z after doc creation:
 
 ```text
 ## feat/sitl-position-confidence...origin/feat/sitl-position-confidence
-?? scripts/validate-position-confidence.py
+ M active-session/HANDOFF.md
+ M active-session/progress.log
+ M docs/project-index.md
+?? docs/position-confidence-fallback.md
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
@@ -90,8 +98,8 @@ CHECK_GATE_EXIT=1
 
 ## Current Blocker
 
-FEAT-009 still needs `docs/position-confidence-fallback.md`, `scripts/check-gate.sh` wiring for `scripts/validate-position-confidence.py`, and actual verification output in `stage-gates/active/FEAT-009/04-verification.md` before it can pass.
+FEAT-009 still needs `scripts/check-gate.sh` wiring for `scripts/validate-position-confidence.py`, then actual command/output evidence pasted into `stage-gates/active/FEAT-009/04-verification.md` with `STATUS: PASS` before the feature can be marked passing.
 
 ## Next Concrete Step
 
-Add `docs/position-confidence-fallback.md` documenting FEAT-009 states, thresholds, actuator safety behavior, and SITL integration path, then wire `scripts/validate-position-confidence.py` into `scripts/check-gate.sh` in a follow-up component.
+Wire `scripts/validate-position-confidence.py` into `scripts/check-gate.sh`, rerun the targeted validator and full gate, then update `stage-gates/active/FEAT-009/04-verification.md` with actual captured output in a follow-up component.
