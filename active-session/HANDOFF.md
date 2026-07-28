@@ -27,6 +27,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - 2026-07-28T10:03:55Z heartbeat: read hot context, verified repo root/status/remotes, reran the FEAT-008 gate successfully (`CHECK_GATE_EXIT=0`), verified PR #5 is MERGED, fast-forwarded local `main` to `origin/main`, created branch `feat/sitl-position-confidence`, activated FEAT-009, and created FEAT-009 discovery/design/execution/verification stage-gate contracts.
 - 2026-07-28T10:03:55Z heartbeat: reran the active FEAT-009 gate; it failed as intended with `CHECK_GATE_EXIT=1` because `04-verification.md` contains exact `STATUS: FAIL` until implementation artifacts and actual evidence are complete.
 - 2026-07-28T13:10:25Z heartbeat: created `sitl/position-confidence.v0.json` with thresholds, safe actuator outputs, and six deterministic scenarios covering RTK confident, canopy dead-reckoning accepted, stale GPS HOLD, IMU/odometer disagreement HOLD, invalid ultrasonic HOLD, and fallback budget expired HOLD. JSON syntax/smoke validation passed.
+- 2026-07-28T13:10:25Z heartbeat: committed the contract and handoff updates as `a4feeaa` and pushed `origin/feat/sitl-position-confidence` successfully.
 
 ## Latest Verification Commands
 
