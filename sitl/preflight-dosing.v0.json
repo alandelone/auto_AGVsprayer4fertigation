@@ -1,0 +1,139 @@
+{
+  "version": "0.1.0",
+  "feature_id": "FEAT-008",
+  "scope": "Deterministic ArduRover SITL/dry-run preflight gate and speed-synchronized dosing calibration for cucumber-row sprayer missions.",
+  "sources": {
+    "mission_export": "missions/cucumber-row-mission.v0.json",
+    "actuator_mapping": "hardware/pixhawk-actuator-mapping.v0.json",
+    "bench_ratings": "hardware/bench-test-ratings.v0.json"
+  },
+  "units": {
+    "speed_mps": "meters_per_second",
+    "pressure_psi": "pounds_per_square_inch",
+    "flow_lpm": "liters_per_minute",
+    "application_rate_l_per_m2": "liters_per_square_meter",
+    "swath_width_m": "meters"
+  },
+  "preflight_requirements": [
+    {
+      "id": "estop_clear",
+      "description": "Physical E-stop/cutoff monitor must report healthy before any mission start decision.",
+      "telemetry_key": "estop_active",
+      "expected": false,
+      "on_fail": "BLOCK_MISSION_AND_KEEP_ALL_ACTUATORS_SAFE"
+    },
+    {
+      "id": "tank_not_low",
+      "description": "Low-liquid interlock must be clear; no auto-resume is allowed after low-liquid trips.",
+      "telemetry_key": "low_liquid",
+      "expected": false,
+      "on_fail": "BLOCK_MISSION_AND_REQUIRE_OPERATOR_REFILL_REVIEW"
+    },
+    {
+      "id": "pressure_in_bench_range",
+      "description": "Water-only bench pressure must remain inside the FEAT-004 safe operating range.",
+      "telemetry_key": "pressure_psi",
+      "min": 30,
+      "max": 60,
+      "on_fail": "BLOCK_MISSION_AND_KEEP_PUMP_OFF"
+    },
+    {
+      "id": "actuator_mapping_present",
+      "description": "Pump PWM, left valve, right valve, agitation, and E-stop cutoff mappings must exist before dosing is calculated.",
+      "required_output_ids": [
+        "pump_pwm",
+        "left_spray_valve",
+        "right_spray_valve",
+        "agitation",
+        "estop_cutoff"
+      ],
+      "on_fail": "BLOCK_MISSION_AND_REPORT_MAPPING_ERROR"
+    },
+    {
+      "id": "mission_has_spray_segments",
+      "description": "Mission export/source must include spray-triggered segments before dosing calibration is meaningful.",
+      "minimum_spray_segments": 1,
+      "on_fail": "BLOCK_MISSION_AND_REPORT_ROUTE_ERROR"
+    }
+  ],
+  "dosing_model": {
+    "formula": "target_flow_lpm = speed_mps * swath_width_m * application_rate_l_per_m2 * 60",
+    "swath_width_m": 0.5,
+    "application_rate_l_per_m2": 0.08,
+    "speed_reference_mps": 0.25,
+    "expected_target_flow_lpm": 0.6,
+    "allowed_target_flow_lpm": {
+      "min": 0.1,
+      "max": 1.51
+    },
+    "pump_pwm_us": {
+      "off": 1000,
+      "min_calibrated": 1150,
+      "max_calibrated": 1800
+    },
+    "zone_policy": "Only the active left/right spray valve may open; opposite valve, agitation, and cutoff outputs remain at safe defaults unless explicitly commanded by a validated scenario."
+  },
+  "scenarios": [
+    {
+      "id": "safe_preflight_row_spray",
+      "description": "All dry-run/SITL preflight checks healthy; mission may start and dosing setpoint is inside bench-rated two-nozzle flow capacity.",
+      "telemetry": {
+        "estop_active": false,
+        "low_liquid": false,
+        "pressure_psi": 40,
+        "speed_mps": 0.25
+      },
+      "expected": {
+        "mission_start_allowed": true,
+        "blocked_by": [],
+        "target_flow_lpm": 0.6,
+        "pump_pwm_us_min": 1150,
+        "actuator_safe_state_required_before_start": true
+      }
+    },
+    {
+      "id": "blocked_low_liquid",
+      "description": "Low-liquid interlock trips; mission must not start and all pump/valve commands remain safe/off.",
+      "telemetry": {
+        "estop_active": false,
+        "low_liquid": true,
+        "pressure_psi": 40,
+        "speed_mps": 0.25
+      },
+      "expected": {
+        "mission_start_allowed": false,
+        "blocked_by": [
+          "tank_not_low"
+        ],
+        "target_flow_lpm": 0.6,
+        "safe_outputs": {
+          "pump_pwm_us": 1000,
+          "left_spray_valve": 0,
+          "right_spray_valve": 0
+        }
+      }
+    },
+    {
+      "id": "blocked_high_pressure",
+      "description": "Pressure above bench range must fail closed before mission start.",
+      "telemetry": {
+        "estop_active": false,
+        "low_liquid": false,
+        "pressure_psi": 72,
+        "speed_mps": 0.25
+      },
+      "expected": {
+        "mission_start_allowed": false,
+        "blocked_by": [
+          "pressure_in_bench_range"
+        ],
+        "target_flow_lpm": 0.6,
+        "safe_outputs": {
+          "pump_pwm_us": 1000,
+          "left_spray_valve": 0,
+          "right_spray_valve": 0
+        }
+      }
+    }
+  ]
+}

@@ -4,11 +4,13 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-`FEAT-007` is active on branch `feat/mission-source-contract` with PR #4 open against `main`. FEAT-007 is PASSING locally: verification evidence is in `stage-gates/active/FEAT-007/04-verification.md`, `python scripts/update-feature.py feature-list.json` has marked FEAT-007 passing, and the full repo gate exits 0.
+Active branch: `feat/sitl-preflight-dosing`.
+
+`active_feature` still points to `FEAT-008`. FEAT-008 is now passing: its implementation artifacts exist, `stage-gates/active/FEAT-008/04-verification.md` has actual command/output evidence and `STATUS: PASS`, and `python scripts/update-feature.py feature-list.json` marked `FEAT-008` with `passes=true`.
 
 Features status:
-- FEAT-001 through FEAT-007: PASSING.
-- FEAT-008 through FEAT-010: PLANNED (SITL preflight & dosing, SITL dead reckoning & position gate, SITL fault recovery & telemetry logging).
+- FEAT-001 through FEAT-008: PASSING.
+- FEAT-009 through FEAT-010: PLANNED / not passing.
 
 ## Key Goal Clarification
 
@@ -18,9 +20,33 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 
 - FEAT-006 is complete and marked passing through `scripts/update-feature.py`.
 - FEAT-007 stage-gate contracts, mission source contract, Mission Planner/QGC exporters, exported artifacts, validator wiring, verification evidence, and feature-list pass update are complete.
-- FEAT-007 branch `feat/mission-source-contract` is pushed and PR #4 is open: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
-- 2026-07-26T00:09:26Z heartbeat: read hot context, verified branch/remotes, reran the full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #4 remains OPEN with no status checks and `mergeStateStatus=CLEAN`. No implementation changes were made because FEAT-007 is already passing and awaiting integration.
-- 2026-07-26T03:10:42Z heartbeat: read hot context, verified repo root/branch/remotes, reran the full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #4 remains OPEN with no status checks and `mergeStateStatus=UNKNOWN`. No implementation changes were made because FEAT-007 is already passing and awaiting integration.
+- FEAT-007 PR #4 was verified MERGED: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4.
+- FEAT-008 stage-gate contracts, preflight/dosing scenario contract, deterministic validator, gate wiring, docs, final verification evidence, and feature-list pass update are complete.
+- 2026-07-26T21:29:23Z heartbeat: read hot context, verified repo root/status, reran FEAT-008 gate initially failing (`CHECK_GATE_EXIT=1`), updated final verification evidence with actual py_compile/validator/full-gate outputs, reran full gate successfully (`CHECK_GATE_EXIT=0`), marked FEAT-008 passing via `scripts/update-feature.py`, and reran full gate successfully again.
+- 2026-07-26T21:29:23Z heartbeat: committed FEAT-008 completion as `6f4f76c`, pushed `feat/sitl-preflight-dosing` to origin, opened PR #5, and verified PR #5 is OPEN with `mergeStateStatus=CLEAN` and no status checks: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5.
+- 2026-07-27T00:32:40Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
+- 2026-07-27T03:34:47Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
+- 2026-07-27T03:34:47Z heartbeat: committed/pushed handoff update as `4dfd443`; post-push PR #5 remained OPEN with no status checks and `mergeStateStatus=UNKNOWN` while GitHub recalculates.
+- 2026-07-27T06:37:32Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
+- 2026-07-27T06:37:32Z heartbeat: committed/pushed handoff update as `2932596`; post-push PR #5 remained OPEN with no status checks and `mergeStateStatus=UNKNOWN` while GitHub recalculates.
+- 2026-07-27T09:43:43Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=UNKNOWN` and no status checks.
+- 2026-07-27T12:45:47Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
+- 2026-07-27T12:45:47Z heartbeat: committed/pushed handoff update as `91e6746`; post-push PR #5 remained OPEN with no status checks and `mergeStateStatus=UNKNOWN` while GitHub recalculates.
+- 2026-07-27T15:48:48Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
+
+- 2026-07-27T18:51:44Z heartbeat: read hot context, verified repo root/status, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=UNKNOWN` and no status checks.
+
+- 2026-07-27T18:51:44Z heartbeat: committed/pushed handoff update as `e7bfa40` to origin/feat/sitl-preflight-dosing; post-push PR #5 should recalculate merge state.
+
+- 2026-07-27T21:53:47Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
+
+- 2026-07-28T00:55:51Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
+
+- 2026-07-28T00:55:51Z heartbeat: committed/pushed handoff update as `c447c14` to origin/feat/sitl-preflight-dosing; post-push PR #5 remains OPEN with no status checks and `mergeStateStatus=UNKNOWN` while GitHub recalculates.
+
+- 2026-07-28T03:58:48Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=UNKNOWN` and no status checks.
+
+- 2026-07-28T07:01:56Z heartbeat: read hot context, verified repo root/status/remotes, reran full gate successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #5 remains OPEN with `mergeStateStatus=CLEAN` and no status checks.
 
 ## Latest Verification Commands
 
@@ -28,16 +54,20 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 git rev-parse --show-toplevel && git status --short --branch && git remote -v && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
-Output:
+Output from 2026-07-28T07:01:56Z heartbeat:
 
 ```text
 /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
-## feat/mission-source-contract...origin/feat/mission-source-contract
+## feat/sitl-preflight-dosing...origin/feat/sitl-preflight-dosing
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
+PASS: preflight dosing contract validated
+Validated scenarios: 3 (1 safe, 2 blocked)
+Mission spray segments: 2
+Reference target_flow_lpm: 0.600
 Gate check passed
 Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
 Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
@@ -62,28 +92,10 @@ SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
 CHECK_GATE_EXIT=0
 ```
 
-```bash
-gh auth status && gh pr view 4 --json number,state,url,mergeStateStatus,statusCheckRollup,headRefName,baseRefName
-```
-
-Output:
-
-```text
-github.com
-  ✓ Logged in to github.com account alanworkliaolo (/home/ubuntu/.hermes/profiles/evergreen4bot/home/.config/gh/hosts.yml)
-  - Active account: true
-  - Git operations protocol: https
-  - Token: gho_************************************
-  - Token scopes: 'gist', 'read:org', 'repo'
-{"baseRefName":"main","headRefName":"feat/mission-source-contract","mergeStateStatus":"CLEAN","number":4,"state":"OPEN","statusCheckRollup":[],"url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4"}
-```
-
 ## Current Blocker
 
-FEAT-007 has no local code blocker and the full gate exits 0, but the repo is waiting on PR/integration state before moving to FEAT-008. PR #4 (`feat/mission-source-contract` -> `main`) is still OPEN as of 2026-07-26T03:10:42Z, with no reported status checks and `mergeStateStatus=UNKNOWN`. `active_feature` still points to FEAT-007 even though FEAT-007 now passes; move the pointer to FEAT-008 only after this FEAT-007 branch is safely integrated or a new branch is started.
-
-Heartbeat cron job `0248354e8f86` is paused as of 2026-07-24T07:09:24Z to avoid repeated blocker/status spam. Resume it only after the PR/integration blocker is solved.
+No FEAT-008 implementation blocker remains. FEAT-008 is passing and waiting for PR #5 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5. Latest verified PR state from 2026-07-28T07:01:56Z: OPEN, no status checks, `mergeStateStatus=CLEAN`.
 
 ## Next Concrete Step
 
-Review/merge PR #4: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/4. After FEAT-007 lands on `main`, sync the local default branch as appropriate, create the next branch for FEAT-008, update `active_feature`, and resume heartbeat if continued autonomous work is wanted.
+After FEAT-008 PR #5 is merged, sync `main`, activate FEAT-009, and create FEAT-009 stage-gate contracts for the SITL position-confidence and canopy dead-reckoning fallback feature.
