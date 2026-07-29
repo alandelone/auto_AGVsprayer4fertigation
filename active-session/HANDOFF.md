@@ -30,6 +30,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - 2026-07-29T13:49:18Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #6 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks.
 - 2026-07-29T16:52:36Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #6 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks.
 - 2026-07-29T16:54:26Z heartbeat: committed and pushed heartbeat notes; post-push PR #6 remains OPEN/non-draft with `mergeStateStatus=UNKNOWN` and no status checks while GitHub recalculates.
+- 2026-07-29T19:57:14Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #6 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks.
 
 ## Latest Verification Commands
 
@@ -94,12 +95,12 @@ gh pr view 6 --json number,state,isDraft,mergeStateStatus,mergedAt,url,headRefNa
 Output:
 
 ```json
-{"baseRefName":"main","headRefName":"feat/sitl-position-confidence","isDraft":false,"mergeStateStatus":"UNKNOWN","mergedAt":null,"number":6,"state":"OPEN","statusCheckRollup":[],"title":"FEAT-009 SITL position confidence gate","url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6"}
+{"baseRefName":"main","headRefName":"feat/sitl-position-confidence","isDraft":false,"mergeStateStatus":"CLEAN","mergedAt":null,"number":6,"state":"OPEN","statusCheckRollup":[],"title":"FEAT-009 SITL position confidence gate","url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6"}
 ```
 
 ## Current Blocker
 
-FEAT-009 has no implementation blocker. Integration is pending on PR #6 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6. Latest post-push GitHub merge-state report is `UNKNOWN` while GitHub recalculates; no status checks are configured.
+FEAT-009 has no implementation blocker. Integration is pending on PR #6 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6. Latest GitHub merge-state report is `CLEAN`; no status checks are configured.
 
 ## Next Concrete Step
 
