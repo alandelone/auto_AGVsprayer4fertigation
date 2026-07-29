@@ -26,11 +26,18 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - 2026-07-29T01:35:29Z heartbeat: committed FEAT-009 completion as `7d105d5`, pushed `origin/feat/sitl-position-confidence`, updated existing PR #6 body, marked it ready for review, and verified PR #6 is OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6.
 - 2026-07-29T04:38:22Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #6 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks.
 - 2026-07-29T07:42:26Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #6 remains OPEN/non-draft with `mergeStateStatus=UNKNOWN` and no status checks.
+- 2026-07-29T10:46:20Z heartbeat: reran the full gate successfully (`CHECK_GATE_EXIT=0`) and verified PR #6 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks.
 
 ## Latest Verification Commands
 
 ```bash
-git rev-parse --show-toplevel && git status --short --branch && git remote -v && git diff --stat && bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+set -o pipefail
+git rev-parse --show-toplevel
+git status --short --branch
+git branch --show-current
+git remote -v
+git diff --stat
+bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
 Output:
@@ -38,6 +45,7 @@ Output:
 ```text
 /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
 ## feat/sitl-position-confidence...origin/feat/sitl-position-confidence
+feat/sitl-position-confidence
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
 Initializing auto_AGVsprayer4fertigation workspace...
@@ -83,12 +91,12 @@ gh pr view 6 --json number,state,isDraft,mergeStateStatus,mergedAt,url,headRefNa
 Output:
 
 ```json
-{"baseRefName":"main","headRefName":"feat/sitl-position-confidence","isDraft":false,"mergeStateStatus":"UNKNOWN","mergedAt":null,"number":6,"state":"OPEN","statusCheckRollup":[],"title":"FEAT-009 SITL position confidence gate","url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6"}
+{"baseRefName":"main","headRefName":"feat/sitl-position-confidence","isDraft":false,"mergeStateStatus":"CLEAN","mergedAt":null,"number":6,"state":"OPEN","statusCheckRollup":[],"title":"FEAT-009 SITL position confidence gate","url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6"}
 ```
 
 ## Current Blocker
 
-FEAT-009 has no implementation blocker. Integration is pending on PR #6 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6. Latest GitHub merge-state report is `UNKNOWN` while GitHub recalculates; no status checks are configured.
+FEAT-009 has no implementation blocker. Integration is pending on PR #6 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6. Latest GitHub merge-state report is `CLEAN`; no status checks are configured.
 
 ## Next Concrete Step
 
