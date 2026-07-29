@@ -23,6 +23,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - FEAT-008 SITL preflight/dosing contract, validator, docs, gate wiring, verification evidence, and feature-list pass update are complete; PR #5 was verified MERGED on 2026-07-28T10:03:55Z: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/5.
 - FEAT-009 branch `feat/sitl-position-confidence` was created from synced `main`; stage-gate contracts, `sitl/position-confidence.v0.json`, `scripts/validate-position-confidence.py`, `docs/position-confidence-fallback.md`, project-index link, and `scripts/check-gate.sh` wiring are complete.
 - 2026-07-29T01:32:22Z heartbeat: completed FEAT-009 verification evidence in `stage-gates/active/FEAT-009/04-verification.md`, set exact `STATUS: PASS`, reran the full gate successfully (`CHECK_GATE_EXIT=0`), then ran `python scripts/update-feature.py feature-list.json` to mark FEAT-009 passing and reran the full gate successfully again.
+- 2026-07-29T01:35:29Z heartbeat: committed FEAT-009 completion as `7d105d5`, pushed `origin/feat/sitl-position-confidence`, updated existing PR #6 body, marked it ready for review, and verified PR #6 is OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6.
 
 ## Latest Verification Commands
 
@@ -120,8 +121,8 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-No FEAT-009 implementation blocker remains. Integration is still pending: commit the completed FEAT-009 gate/pass updates, push `feat/sitl-position-confidence`, and open/verify the GitHub PR if authentication allows.
+FEAT-009 has no implementation blocker. Integration is pending on PR #6 review/merge: https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/6.
 
 ## Next Concrete Step
 
-After FEAT-009 is pushed and a PR is open/merged, sync local `main` to `origin/main`, activate FEAT-010, and create FEAT-010 stage-gate contracts before implementation.
+Monitor PR #6 until merged. After merge, fetch/sync local `main` to `origin/main`, activate FEAT-010, and create FEAT-010 stage-gate contracts before implementation.
