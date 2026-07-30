@@ -6,6 +6,8 @@ Repository memory scaffold uses the SSOT design. `feature-list.json` owns `activ
 
 Active branch: `feat/sitl-fault-recovery-telemetry`.
 
+Draft PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7.
+
 `active_feature` points to `FEAT-010`. FEAT-001 through FEAT-009 are all PASSING and merged into `main`. FEAT-010 is ACTIVE / not passing.
 
 Features status:
@@ -28,6 +30,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
   - `04-verification.md`
 - Captured current failing gate output in `04-verification.md` with exact `STATUS: FAIL`.
 - Reviewed the stage-gate contract component and recorded `REVIEW FEAT-010 stage-gate-contracts: PASS` in `active-session/progress.log`.
+- Committed the stage-gate contracts as `2eea8c7`, pushed `origin/feat/sitl-fault-recovery-telemetry`, opened draft PR #7, and verified PR #7 is OPEN/draft with no status checks configured.
 
 ## Latest Verification Commands
 
@@ -181,6 +184,16 @@ Mission spray segments: 2
 Fallback budget: 6.0s / 1.500m
 FAIL: verification gate status must be PASS
 CHECK_GATE_EXIT=1
+```
+
+```bash
+gh pr view 7 --json number,state,isDraft,mergeStateStatus,mergedAt,url,headRefName,baseRefName,statusCheckRollup,title
+```
+
+Output:
+
+```json
+{"baseRefName":"main","headRefName":"feat/sitl-fault-recovery-telemetry","isDraft":true,"mergeStateStatus":"CLEAN","mergedAt":null,"number":7,"state":"OPEN","statusCheckRollup":[],"title":"FEAT-010 SITL fault recovery telemetry gate","url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7"}
 ```
 
 ## Current Blocker
