@@ -31,6 +31,9 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - Captured current failing gate output in `04-verification.md` with exact `STATUS: FAIL`.
 - Reviewed the stage-gate contract component and recorded `REVIEW FEAT-010 stage-gate-contracts: PASS` in `active-session/progress.log`.
 - Committed the stage-gate contracts as `2eea8c7`, pushed `origin/feat/sitl-fault-recovery-telemetry`, opened draft PR #7, and verified PR #7 is OPEN/draft with no status checks configured.
+- Created FEAT-010 implementation component 1: `sitl/fault-recovery-telemetry.v0.json`.
+- Verified the JSON contract covers recovery policy, spray ledger, telemetry schema, five deterministic scenarios, and two negative telemetry completeness cases.
+- Reviewed the contract component and recorded `REVIEW FEAT-010 recovery telemetry contract: PASS` in `active-session/progress.log`.
 
 ## Latest Verification Commands
 
@@ -196,10 +199,64 @@ Output:
 {"baseRefName":"main","headRefName":"feat/sitl-fault-recovery-telemetry","isDraft":true,"mergeStateStatus":"CLEAN","mergedAt":null,"number":7,"state":"OPEN","statusCheckRollup":[],"title":"FEAT-010 SITL fault recovery telemetry gate","url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7"}
 ```
 
+## Latest FEAT-010 Contract Verification
+
+```bash
+python - <<'PY'
+import json
+from pathlib import Path
+path = Path('sitl/fault-recovery-telemetry.v0.json')
+data = json.loads(path.read_text(encoding='utf-8'))
+required_scenarios = {
+    'recoverable_obstacle_resume_tail_and_complete',
+    'canopy_degradation_bounded_dead_reckoning_complete',
+    'duplicate_spray_replay_attempt_suppressed',
+    'unrecoverable_sensor_fault_timeout_aborts_safe',
+    'stale_clear_and_missing_ack_blocks_resume',
+}
+scenario_ids = {scenario['id'] for scenario in data.get('scenarios', [])}
+negative_ids = {case['id'] for case in data.get('negative_telemetry_cases', [])}
+missing = sorted(required_scenarios - scenario_ids)
+if missing:
+    raise SystemExit('missing scenarios: ' + ','.join(missing))
+if len(negative_ids) < 2:
+    raise SystemExit('missing telemetry negative cases')
+print('FEAT010_CONTRACT_JSON_OK=true')
+print(f"SCENARIOS={len(scenario_ids)}")
+print(f"NEGATIVE_TELEMETRY_CASES={len(negative_ids)}")
+print('SCENARIO_IDS=' + ','.join(sorted(scenario_ids)))
+print('NEGATIVE_CASE_IDS=' + ','.join(sorted(negative_ids)))
+PY
+bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
+```
+
+Output:
+
+```text
+FEAT010_CONTRACT_JSON_OK=true
+SCENARIOS=5
+NEGATIVE_TELEMETRY_CASES=2
+SCENARIO_IDS=canopy_degradation_bounded_dead_reckoning_complete,duplicate_spray_replay_attempt_suppressed,recoverable_obstacle_resume_tail_and_complete,stale_clear_and_missing_ack_blocks_resume,unrecoverable_sensor_fault_timeout_aborts_safe
+NEGATIVE_CASE_IDS=missing_recovery_decision_event_fails_validation,missing_required_fault_id_fails_validation
+Initializing auto_AGVsprayer4fertigation workspace...
+No build or test toolchain is configured yet.
+Add setup commands here when source code is introduced.
+PASS: preflight dosing contract validated
+Validated scenarios: 3 (1 safe, 2 blocked)
+Mission spray segments: 2
+Reference target_flow_lpm: 0.600
+PASS: position confidence contract validated
+Validated scenarios: 6 (2 continue, 4 safe_hold)
+Decision counts: RTK_CONFIDENT=1 DEAD_RECKONING_ACTIVE=1 SAFE_HOLD=4
+Mission spray segments: 2
+Fallback budget: 6.0s / 1.500m
+FAIL: verification gate status must be PASS
+CHECK_GATE_EXIT=1
+```
+
 ## Current Blocker
 
-FEAT-010 is intentionally failing closed. Required implementation artifacts do not exist yet:
-- `sitl/fault-recovery-telemetry.v0.json`
+FEAT-010 remains failing closed. The first JSON contract exists; remaining implementation artifacts are still pending:
 - `scripts/validate-fault-recovery-telemetry.py`
 - `docs/fault-recovery-telemetry.md`
 - `scripts/check-gate.sh` wiring for the FEAT-010 validator
@@ -207,4 +264,4 @@ FEAT-010 is intentionally failing closed. Required implementation artifacts do n
 
 ## Next Concrete Step
 
-Create the first FEAT-010 implementation component only: `sitl/fault-recovery-telemetry.v0.json` with deterministic recovery/resume/telemetry scenarios from `stage-gates/active/FEAT-010/03-execution.md`; run JSON validation and the repo gate; record a `REVIEW FEAT-010 recovery telemetry contract: PASS|FAIL ...` line before moving to the validator component.
+Implement component 2 only: `scripts/validate-fault-recovery-telemetry.py` to load `sitl/fault-recovery-telemetry.v0.json`, validate required fields, compute recovery/resume decisions, enforce actuator safety, enforce spray-ledger no-duplicate behavior, and verify telemetry completeness. Then run `python -m py_compile`, the direct validator, and the repo gate; record `REVIEW FEAT-010 fault recovery validator: PASS|FAIL ...` before moving to docs/gate wiring.

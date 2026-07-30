@@ -1,0 +1,1302 @@
+{
+  "version": "0.1.0",
+  "feature_id": "FEAT-010",
+  "scope": "Deterministic SITL-style fault recovery, resume-policy, duplicate-spray prevention, and black-box telemetry contract for cucumber-row AGV sprayer missions.",
+  "sources": {
+    "mission_export": "missions/cucumber-row-mission.v0.json",
+    "actuator_mapping": "hardware/pixhawk-actuator-mapping.v0.json",
+    "preflight_dosing": "sitl/preflight-dosing.v0.json",
+    "position_confidence": "sitl/position-confidence.v0.json"
+  },
+  "units": {
+    "timestamp_s": "seconds from scenario start",
+    "hold_duration_s": "seconds",
+    "clear_event_age_s": "seconds",
+    "fault_clear_age_s": "seconds",
+    "fallback_duration_s": "seconds",
+    "fallback_distance_m": "meters",
+    "pump_pwm_us": "microseconds",
+    "spray_progress": "0.0 to 1.0 fraction of logical spray work unit"
+  },
+  "safe_outputs": {
+    "pump_pwm_us": 1000,
+    "left_spray_valve": 0,
+    "right_spray_valve": 0,
+    "agitation": 0
+  },
+  "spray_outputs": {
+    "LEFT": {
+      "pump_pwm_us": 1450,
+      "left_spray_valve": 1,
+      "right_spray_valve": 0,
+      "agitation": 1
+    },
+    "OFF": {
+      "pump_pwm_us": 1000,
+      "left_spray_valve": 0,
+      "right_spray_valve": 0,
+      "agitation": 0
+    }
+  },
+  "state_machine": {
+    "states": {
+      "MISSION_RUNNING": "Navigation, dosing, preflight, and position-confidence inputs are currently safe enough to continue the mission.",
+      "HOLD_FAULT_ACTIVE": "A fault or unsafe confidence state requires HOLD mode with all sprayer outputs off.",
+      "RECOVERY_READY": "Fault-clear telemetry is fresh, required acknowledgement is present, and position confidence is acceptable for resume.",
+      "RECOVERY_BLOCKED": "A recovery attempt was rejected because policy inputs are stale, incomplete, unsafe, or would duplicate spraying.",
+      "MISSION_RESUMED": "Mission execution restarted at the first unsprayed spray-ledger work unit or at the next non-spray mission item.",
+      "MISSION_COMPLETE": "Mission ended with all required spray work units either sprayed once or intentionally skipped with documented reason.",
+      "MISSION_ABORTED": "Mission cannot safely recover within policy and remains safe/off."
+    },
+    "allowed_transitions": [
+      [
+        "MISSION_RUNNING",
+        "HOLD_FAULT_ACTIVE"
+      ],
+      [
+        "MISSION_RUNNING",
+        "MISSION_COMPLETE"
+      ],
+      [
+        "HOLD_FAULT_ACTIVE",
+        "RECOVERY_READY"
+      ],
+      [
+        "HOLD_FAULT_ACTIVE",
+        "RECOVERY_BLOCKED"
+      ],
+      [
+        "HOLD_FAULT_ACTIVE",
+        "MISSION_ABORTED"
+      ],
+      [
+        "RECOVERY_READY",
+        "MISSION_RESUMED"
+      ],
+      [
+        "RECOVERY_BLOCKED",
+        "HOLD_FAULT_ACTIVE"
+      ],
+      [
+        "MISSION_RESUMED",
+        "MISSION_RUNNING"
+      ],
+      [
+        "MISSION_RUNNING",
+        "MISSION_ABORTED"
+      ]
+    ]
+  },
+  "recovery_policy": {
+    "recoverable_fault_types": [
+      "FRONT_OBSTACLE",
+      "CANOPY_RTK_DROP",
+      "ULTRASONIC_CANOPY_SHADOW"
+    ],
+    "unrecoverable_fault_types": [
+      "ESTOP_ACTIVE",
+      "LOW_LIQUID",
+      "ODOMETER_IMU_DIVERGENCE",
+      "PUMP_FEEDBACK_MISMATCH"
+    ],
+    "fault_classes": {
+      "FRONT_OBSTACLE": {
+        "recoverability": "recoverable_after_clear",
+        "requires_hold_on_detection": true,
+        "requires_operator_ack": true,
+        "allowed_resume_position_confidence_states": [
+          "RTK_CONFIDENT",
+          "DEAD_RECKONING_ACTIVE"
+        ]
+      },
+      "CANOPY_RTK_DROP": {
+        "recoverability": "bounded_position_recovery",
+        "requires_hold_on_detection": false,
+        "requires_operator_ack": false,
+        "allowed_continue_position_confidence_states": [
+          "DEAD_RECKONING_ACTIVE"
+        ],
+        "fallback_budget_ref": "sitl/position-confidence.v0.json thresholds max_fallback_duration_s and max_fallback_distance_m"
+      },
+      "ULTRASONIC_CANOPY_SHADOW": {
+        "recoverability": "recoverable_after_clear",
+        "requires_hold_on_detection": true,
+        "requires_operator_ack": true,
+        "allowed_resume_position_confidence_states": [
+          "RTK_CONFIDENT"
+        ]
+      },
+      "ESTOP_ACTIVE": {
+        "recoverability": "unrecoverable_for_auto_resume",
+        "requires_hold_on_detection": true,
+        "requires_operator_ack": true,
+        "auto_resume_allowed": false
+      },
+      "LOW_LIQUID": {
+        "recoverability": "unrecoverable_for_auto_resume",
+        "requires_hold_on_detection": true,
+        "requires_operator_ack": true,
+        "auto_resume_allowed": false
+      },
+      "ODOMETER_IMU_DIVERGENCE": {
+        "recoverability": "unrecoverable_for_auto_resume",
+        "requires_hold_on_detection": true,
+        "requires_operator_ack": true,
+        "auto_resume_allowed": false
+      },
+      "PUMP_FEEDBACK_MISMATCH": {
+        "recoverability": "unrecoverable_for_auto_resume",
+        "requires_hold_on_detection": true,
+        "requires_operator_ack": true,
+        "auto_resume_allowed": false
+      }
+    },
+    "max_fault_clear_age_s": 2.0,
+    "max_hold_duration_s": 15.0,
+    "max_actuator_safe_latency_ms": 200,
+    "allowed_resume_position_confidence_states": [
+      "RTK_CONFIDENT",
+      "DEAD_RECKONING_ACTIVE"
+    ],
+    "resume_start_policy": "FIRST_UNSPRAYED_LEDGER_UNIT",
+    "duplicate_spray_action": "SUPPRESS_COMMAND_LOG_EVENT_KEEP_OUTPUTS_SAFE",
+    "stale_clear_action": "BLOCK_RESUME_KEEP_HOLD",
+    "missing_ack_action": "BLOCK_RESUME_KEEP_HOLD"
+  },
+  "spray_ledger": {
+    "identity_fields": [
+      "mission_id",
+      "spray_unit_id",
+      "row_label",
+      "spray_zone",
+      "pass_id"
+    ],
+    "completion_statuses": [
+      "unsprayed",
+      "sprayed",
+      "skipped_duplicate_suppressed"
+    ],
+    "resume_scan_order": [
+      "row_01_left_spray_head",
+      "row_01_left_spray_tail"
+    ],
+    "spray_work_units": [
+      {
+        "spray_unit_id": "row_01_left_spray_head",
+        "mission_id": "cucumber_row_synthetic_mission_v0",
+        "mission_segment_id": "row_01_left_spray",
+        "mission_item_start": "WP003",
+        "mission_item_end": "WP004",
+        "row_label": "row_01_left_spray_start",
+        "spray_zone": "LEFT",
+        "pass_id": "pass_001",
+        "progress_range": {
+          "start": 0.0,
+          "end": 0.45
+        }
+      },
+      {
+        "spray_unit_id": "row_01_left_spray_tail",
+        "mission_id": "cucumber_row_synthetic_mission_v0",
+        "mission_segment_id": "row_01_left_spray",
+        "mission_item_start": "WP003",
+        "mission_item_end": "WP004",
+        "row_label": "row_01_left_spray_end",
+        "spray_zone": "LEFT",
+        "pass_id": "pass_001",
+        "progress_range": {
+          "start": 0.45,
+          "end": 1.0
+        }
+      }
+    ]
+  },
+  "telemetry_schema": {
+    "sequence_policy": "Telemetry sequence numbers must be strictly increasing and timestamps must be nondecreasing within each scenario.",
+    "common_required_fields": [
+      "seq",
+      "timestamp_s",
+      "event_type",
+      "state",
+      "mode",
+      "mission_item_id",
+      "actuator_state"
+    ],
+    "required_event_types_by_expected_outcome": {
+      "MISSION_COMPLETE_AFTER_RECOVERY": [
+        "MISSION_START",
+        "SPRAY_ON",
+        "FAULT_DETECTED",
+        "HOLD_ENTERED",
+        "ACTUATORS_SAFE",
+        "FAULT_CLEAR",
+        "RESUME_ACK",
+        "POSITION_CONFIDENCE",
+        "RECOVERY_DECISION",
+        "MISSION_RESUMED",
+        "SPRAY_LEDGER_RECORD",
+        "SPRAY_OFF",
+        "MISSION_COMPLETE"
+      ],
+      "BOUNDED_DEAD_RECKONING_COMPLETE": [
+        "MISSION_START",
+        "SPRAY_ON",
+        "SENSOR_DEGRADED",
+        "POSITION_CONFIDENCE",
+        "RECOVERY_DECISION",
+        "SPRAY_LEDGER_RECORD",
+        "SPRAY_OFF",
+        "MISSION_COMPLETE"
+      ],
+      "DUPLICATE_SUPPRESSED_COMPLETE": [
+        "MISSION_RESUMED",
+        "SPRAY_REPLAY_ATTEMPT",
+        "DUPLICATE_SPRAY_SUPPRESSED",
+        "MISSION_COMPLETE"
+      ],
+      "MISSION_ABORTED": [
+        "MISSION_START",
+        "FAULT_DETECTED",
+        "HOLD_ENTERED",
+        "ACTUATORS_SAFE",
+        "HOLD_TIMEOUT",
+        "MISSION_ABORTED"
+      ],
+      "RESUME_BLOCKED": [
+        "MISSION_START",
+        "FAULT_DETECTED",
+        "HOLD_ENTERED",
+        "ACTUATORS_SAFE",
+        "FAULT_CLEAR",
+        "POSITION_CONFIDENCE",
+        "RECOVERY_DECISION"
+      ]
+    },
+    "required_fields_by_event_type": {
+      "MISSION_START": [
+        "mission_id"
+      ],
+      "SPRAY_ON": [
+        "spray_unit_id",
+        "spray_zone"
+      ],
+      "SPRAY_LEDGER_RECORD": [
+        "spray_unit_id",
+        "ledger_status"
+      ],
+      "SPRAY_OFF": [
+        "spray_unit_id"
+      ],
+      "FAULT_DETECTED": [
+        "fault_id",
+        "fault_type",
+        "recovery_class",
+        "position_confidence_state"
+      ],
+      "SENSOR_DEGRADED": [
+        "fault_id",
+        "fault_type",
+        "position_confidence_state"
+      ],
+      "HOLD_ENTERED": [
+        "fault_id",
+        "reason_codes"
+      ],
+      "ACTUATORS_SAFE": [
+        "fault_id",
+        "safe_output_verified"
+      ],
+      "FAULT_CLEAR": [
+        "fault_id",
+        "clear_event_age_s",
+        "clear_source"
+      ],
+      "RESUME_ACK": [
+        "fault_id",
+        "ack_source",
+        "acknowledgement"
+      ],
+      "POSITION_CONFIDENCE": [
+        "position_confidence_state",
+        "confidence_inputs"
+      ],
+      "RECOVERY_DECISION": [
+        "fault_id",
+        "recovery_decision",
+        "resume_allowed",
+        "reason_codes"
+      ],
+      "MISSION_RESUMED": [
+        "resume_policy",
+        "resume_unit_id"
+      ],
+      "SPRAY_REPLAY_ATTEMPT": [
+        "spray_unit_id",
+        "requested_actuator_state"
+      ],
+      "DUPLICATE_SPRAY_SUPPRESSED": [
+        "spray_unit_id",
+        "reason_codes"
+      ],
+      "HOLD_TIMEOUT": [
+        "fault_id",
+        "hold_duration_s",
+        "reason_codes"
+      ],
+      "MISSION_ABORTED": [
+        "fault_id",
+        "reason_codes"
+      ],
+      "MISSION_COMPLETE": [
+        "outcome"
+      ]
+    }
+  },
+  "scenarios": [
+    {
+      "id": "recoverable_obstacle_resume_tail_and_complete",
+      "description": "Front obstacle triggers HOLD, clears with fresh telemetry and operator acknowledgement, resumes at the first unsprayed spray-ledger unit, and completes without re-spraying the head unit.",
+      "expected_outcome_type": "MISSION_COMPLETE_AFTER_RECOVERY",
+      "initial_spray_ledger": [],
+      "timeline": [
+        {
+          "seq": 1,
+          "timestamp_s": 0.0,
+          "event_type": "MISSION_START",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_id": "cucumber_row_synthetic_mission_v0",
+          "mission_item_id": "WP001",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 2,
+          "timestamp_s": 8.0,
+          "event_type": "SPRAY_ON",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "spray_unit_id": "row_01_left_spray_head",
+          "spray_zone": "LEFT",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 3,
+          "timestamp_s": 10.0,
+          "event_type": "FAULT_DETECTED",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-001",
+          "fault_type": "FRONT_OBSTACLE",
+          "recovery_class": "recoverable_after_clear",
+          "position_confidence_state": "RTK_CONFIDENT",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 4,
+          "timestamp_s": 10.1,
+          "event_type": "HOLD_ENTERED",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-001",
+          "reason_codes": [
+            "front_obstacle_detected"
+          ],
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 5,
+          "timestamp_s": 10.15,
+          "event_type": "ACTUATORS_SAFE",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-001",
+          "safe_output_verified": true,
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 6,
+          "timestamp_s": 10.2,
+          "event_type": "SPRAY_LEDGER_RECORD",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "spray_unit_id": "row_01_left_spray_head",
+          "ledger_status": "sprayed",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 7,
+          "timestamp_s": 14.0,
+          "event_type": "FAULT_CLEAR",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-001",
+          "clear_event_age_s": 0.4,
+          "clear_source": "front_ultrasonic_and_virtual_bumper_clear",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 8,
+          "timestamp_s": 14.2,
+          "event_type": "RESUME_ACK",
+          "state": "RECOVERY_READY",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-001",
+          "ack_source": "operator_console",
+          "acknowledgement": "received",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 9,
+          "timestamp_s": 14.3,
+          "event_type": "POSITION_CONFIDENCE",
+          "state": "RECOVERY_READY",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "position_confidence_state": "RTK_CONFIDENT",
+          "confidence_inputs": {
+            "gps_fix_type": "RTK_FIXED",
+            "gps_age_s": 0.5,
+            "hdop": 0.7,
+            "fallback_duration_s": 0.0,
+            "fallback_distance_m": 0.0
+          },
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 10,
+          "timestamp_s": 14.4,
+          "event_type": "RECOVERY_DECISION",
+          "state": "RECOVERY_READY",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-001",
+          "recovery_decision": "RESUME_FIRST_UNSPRAYED",
+          "resume_allowed": true,
+          "resume_unit_id": "row_01_left_spray_tail",
+          "reason_codes": [
+            "fault_clear_fresh",
+            "operator_ack_received",
+            "position_confidence_accepted",
+            "ledger_head_already_sprayed"
+          ],
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 11,
+          "timestamp_s": 14.6,
+          "event_type": "MISSION_RESUMED",
+          "state": "MISSION_RESUMED",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "resume_policy": "FIRST_UNSPRAYED_LEDGER_UNIT",
+          "resume_unit_id": "row_01_left_spray_tail",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 12,
+          "timestamp_s": 15.0,
+          "event_type": "SPRAY_ON",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "spray_unit_id": "row_01_left_spray_tail",
+          "spray_zone": "LEFT",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 13,
+          "timestamp_s": 20.0,
+          "event_type": "SPRAY_LEDGER_RECORD",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP004",
+          "spray_unit_id": "row_01_left_spray_tail",
+          "ledger_status": "sprayed",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 14,
+          "timestamp_s": 20.1,
+          "event_type": "SPRAY_OFF",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP005",
+          "spray_unit_id": "row_01_left_spray_tail",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 15,
+          "timestamp_s": 24.0,
+          "event_type": "MISSION_COMPLETE",
+          "state": "MISSION_COMPLETE",
+          "mode": "HOLD",
+          "mission_item_id": "WP006",
+          "outcome": "completed_after_recovery",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        }
+      ],
+      "expected": {
+        "validation_result": "PASS",
+        "final_state": "MISSION_COMPLETE",
+        "mission_complete": true,
+        "resume_allowed": true,
+        "resume_unit_id": "row_01_left_spray_tail",
+        "sprayed_once_units": [
+          "row_01_left_spray_head",
+          "row_01_left_spray_tail"
+        ],
+        "duplicate_spray_suppressed": false,
+        "safe_output_event_types": [
+          "HOLD_ENTERED",
+          "ACTUATORS_SAFE",
+          "FAULT_CLEAR",
+          "RESUME_ACK",
+          "POSITION_CONFIDENCE",
+          "RECOVERY_DECISION",
+          "MISSION_RESUMED",
+          "SPRAY_OFF",
+          "MISSION_COMPLETE"
+        ]
+      }
+    },
+    {
+      "id": "canopy_degradation_bounded_dead_reckoning_complete",
+      "description": "Canopy RTK degradation remains within FEAT-009 dead-reckoning budget, so the mission continues bounded recovery without entering HOLD or duplicating spray.",
+      "expected_outcome_type": "BOUNDED_DEAD_RECKONING_COMPLETE",
+      "initial_spray_ledger": [],
+      "timeline": [
+        {
+          "seq": 1,
+          "timestamp_s": 0.0,
+          "event_type": "MISSION_START",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_id": "cucumber_row_synthetic_mission_v0",
+          "mission_item_id": "WP001",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 2,
+          "timestamp_s": 7.0,
+          "event_type": "SPRAY_ON",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "spray_unit_id": "row_01_left_spray_head",
+          "spray_zone": "LEFT",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 3,
+          "timestamp_s": 8.5,
+          "event_type": "POSITION_CONFIDENCE",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "position_confidence_state": "RTK_CONFIDENT",
+          "confidence_inputs": {
+            "gps_fix_type": "RTK_FIXED",
+            "gps_age_s": 0.4,
+            "hdop": 0.8,
+            "fallback_duration_s": 0.0,
+            "fallback_distance_m": 0.0
+          },
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 4,
+          "timestamp_s": 10.0,
+          "event_type": "SENSOR_DEGRADED",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "fault_id": "F-CANOPY-001",
+          "fault_type": "CANOPY_RTK_DROP",
+          "position_confidence_state": "DEAD_RECKONING_ACTIVE",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 5,
+          "timestamp_s": 10.1,
+          "event_type": "POSITION_CONFIDENCE",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "position_confidence_state": "DEAD_RECKONING_ACTIVE",
+          "confidence_inputs": {
+            "gps_fix_type": "3D_FIX",
+            "gps_age_s": 0.8,
+            "hdop": 2.3,
+            "fallback_duration_s": 3.0,
+            "fallback_distance_m": 0.75,
+            "imu_odom_heading_delta_deg": 1.0,
+            "ultrasonic_row_width_error_m": 0.04
+          },
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 6,
+          "timestamp_s": 10.2,
+          "event_type": "RECOVERY_DECISION",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "fault_id": "F-CANOPY-001",
+          "recovery_decision": "CONTINUE_WITH_BOUNDED_DEAD_RECKONING",
+          "resume_allowed": true,
+          "reason_codes": [
+            "dead_reckoning_budget_available",
+            "local_sensors_agree",
+            "operator_ack_not_required"
+          ],
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 7,
+          "timestamp_s": 13.0,
+          "event_type": "SPRAY_LEDGER_RECORD",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "spray_unit_id": "row_01_left_spray_head",
+          "ledger_status": "sprayed",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 8,
+          "timestamp_s": 18.0,
+          "event_type": "SPRAY_LEDGER_RECORD",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP004",
+          "spray_unit_id": "row_01_left_spray_tail",
+          "ledger_status": "sprayed",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 9,
+          "timestamp_s": 18.1,
+          "event_type": "SPRAY_OFF",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP005",
+          "spray_unit_id": "row_01_left_spray_tail",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 10,
+          "timestamp_s": 22.0,
+          "event_type": "MISSION_COMPLETE",
+          "state": "MISSION_COMPLETE",
+          "mode": "HOLD",
+          "mission_item_id": "WP006",
+          "outcome": "completed_with_bounded_dead_reckoning",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        }
+      ],
+      "expected": {
+        "validation_result": "PASS",
+        "final_state": "MISSION_COMPLETE",
+        "mission_complete": true,
+        "hold_entered": false,
+        "recovery_decision": "CONTINUE_WITH_BOUNDED_DEAD_RECKONING",
+        "sprayed_once_units": [
+          "row_01_left_spray_head",
+          "row_01_left_spray_tail"
+        ],
+        "duplicate_spray_suppressed": false
+      }
+    },
+    {
+      "id": "duplicate_spray_replay_attempt_suppressed",
+      "description": "A replayed mission item attempts to spray a ledger unit already marked sprayed; the spray command is not applied, duplicate suppression is logged, and outputs remain off.",
+      "expected_outcome_type": "DUPLICATE_SUPPRESSED_COMPLETE",
+      "initial_spray_ledger": [
+        {
+          "spray_unit_id": "row_01_left_spray_head",
+          "ledger_status": "sprayed"
+        },
+        {
+          "spray_unit_id": "row_01_left_spray_tail",
+          "ledger_status": "sprayed"
+        }
+      ],
+      "timeline": [
+        {
+          "seq": 1,
+          "timestamp_s": 0.0,
+          "event_type": "MISSION_RESUMED",
+          "state": "MISSION_RESUMED",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "resume_policy": "FIRST_UNSPRAYED_LEDGER_UNIT",
+          "resume_unit_id": "row_01_left_spray_head",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 2,
+          "timestamp_s": 0.1,
+          "event_type": "SPRAY_REPLAY_ATTEMPT",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "spray_unit_id": "row_01_left_spray_head",
+          "requested_actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          },
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 3,
+          "timestamp_s": 0.15,
+          "event_type": "DUPLICATE_SPRAY_SUPPRESSED",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "spray_unit_id": "row_01_left_spray_head",
+          "reason_codes": [
+            "ledger_unit_already_sprayed",
+            "spray_command_not_applied"
+          ],
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 4,
+          "timestamp_s": 2.0,
+          "event_type": "MISSION_COMPLETE",
+          "state": "MISSION_COMPLETE",
+          "mode": "HOLD",
+          "mission_item_id": "WP006",
+          "outcome": "completed_after_duplicate_suppression",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        }
+      ],
+      "expected": {
+        "validation_result": "PASS",
+        "final_state": "MISSION_COMPLETE",
+        "mission_complete": true,
+        "duplicate_spray_suppressed": true,
+        "duplicate_spray_commands_applied": 0,
+        "safe_output_event_types": [
+          "MISSION_RESUMED",
+          "SPRAY_REPLAY_ATTEMPT",
+          "DUPLICATE_SPRAY_SUPPRESSED",
+          "MISSION_COMPLETE"
+        ]
+      }
+    },
+    {
+      "id": "unrecoverable_sensor_fault_timeout_aborts_safe",
+      "description": "Unsafe odometer/IMU divergence enters HOLD, keeps sprayer outputs safe, exceeds the HOLD timeout, and aborts without auto-resume.",
+      "expected_outcome_type": "MISSION_ABORTED",
+      "initial_spray_ledger": [],
+      "timeline": [
+        {
+          "seq": 1,
+          "timestamp_s": 0.0,
+          "event_type": "MISSION_START",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_id": "cucumber_row_synthetic_mission_v0",
+          "mission_item_id": "WP001",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 2,
+          "timestamp_s": 7.0,
+          "event_type": "SPRAY_ON",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "spray_unit_id": "row_01_left_spray_head",
+          "spray_zone": "LEFT",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 3,
+          "timestamp_s": 9.0,
+          "event_type": "FAULT_DETECTED",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "fault_id": "F-SENSOR-001",
+          "fault_type": "ODOMETER_IMU_DIVERGENCE",
+          "recovery_class": "unrecoverable_for_auto_resume",
+          "position_confidence_state": "SAFE_HOLD",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 4,
+          "timestamp_s": 9.1,
+          "event_type": "HOLD_ENTERED",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-SENSOR-001",
+          "reason_codes": [
+            "position_confidence_safe_hold",
+            "unrecoverable_sensor_fault"
+          ],
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 5,
+          "timestamp_s": 9.15,
+          "event_type": "ACTUATORS_SAFE",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-SENSOR-001",
+          "safe_output_verified": true,
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 6,
+          "timestamp_s": 24.2,
+          "event_type": "HOLD_TIMEOUT",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-SENSOR-001",
+          "hold_duration_s": 15.1,
+          "reason_codes": [
+            "max_hold_duration_exceeded",
+            "auto_resume_not_allowed"
+          ],
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 7,
+          "timestamp_s": 24.3,
+          "event_type": "MISSION_ABORTED",
+          "state": "MISSION_ABORTED",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-SENSOR-001",
+          "reason_codes": [
+            "unrecoverable_sensor_fault",
+            "hold_timeout"
+          ],
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        }
+      ],
+      "expected": {
+        "validation_result": "PASS",
+        "final_state": "MISSION_ABORTED",
+        "mission_complete": false,
+        "resume_allowed": false,
+        "safe_output_event_types": [
+          "HOLD_ENTERED",
+          "ACTUATORS_SAFE",
+          "HOLD_TIMEOUT",
+          "MISSION_ABORTED"
+        ],
+        "required_reason_codes": [
+          "unrecoverable_sensor_fault",
+          "hold_timeout"
+        ]
+      }
+    },
+    {
+      "id": "stale_clear_and_missing_ack_blocks_resume",
+      "description": "A recoverable obstacle clear event is stale and operator acknowledgement is missing; resume remains blocked and sprayer outputs stay safe/off.",
+      "expected_outcome_type": "RESUME_BLOCKED",
+      "initial_spray_ledger": [],
+      "timeline": [
+        {
+          "seq": 1,
+          "timestamp_s": 0.0,
+          "event_type": "MISSION_START",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_id": "cucumber_row_synthetic_mission_v0",
+          "mission_item_id": "WP001",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 2,
+          "timestamp_s": 8.0,
+          "event_type": "SPRAY_ON",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "spray_unit_id": "row_01_left_spray_head",
+          "spray_zone": "LEFT",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 3,
+          "timestamp_s": 10.0,
+          "event_type": "FAULT_DETECTED",
+          "state": "MISSION_RUNNING",
+          "mode": "AUTO",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-STALE-001",
+          "fault_type": "FRONT_OBSTACLE",
+          "recovery_class": "recoverable_after_clear",
+          "position_confidence_state": "RTK_CONFIDENT",
+          "actuator_state": {
+            "pump_pwm_us": 1450,
+            "left_spray_valve": 1,
+            "right_spray_valve": 0,
+            "agitation": 1
+          }
+        },
+        {
+          "seq": 4,
+          "timestamp_s": 10.1,
+          "event_type": "HOLD_ENTERED",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-STALE-001",
+          "reason_codes": [
+            "front_obstacle_detected"
+          ],
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 5,
+          "timestamp_s": 10.15,
+          "event_type": "ACTUATORS_SAFE",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-STALE-001",
+          "safe_output_verified": true,
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 6,
+          "timestamp_s": 14.0,
+          "event_type": "FAULT_CLEAR",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-STALE-001",
+          "clear_event_age_s": 3.2,
+          "clear_source": "front_ultrasonic_stale_sample",
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 7,
+          "timestamp_s": 14.1,
+          "event_type": "POSITION_CONFIDENCE",
+          "state": "HOLD_FAULT_ACTIVE",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "position_confidence_state": "RTK_CONFIDENT",
+          "confidence_inputs": {
+            "gps_fix_type": "RTK_FIXED",
+            "gps_age_s": 0.5,
+            "hdop": 0.7,
+            "fallback_duration_s": 0.0,
+            "fallback_distance_m": 0.0
+          },
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        },
+        {
+          "seq": 8,
+          "timestamp_s": 14.2,
+          "event_type": "RECOVERY_DECISION",
+          "state": "RECOVERY_BLOCKED",
+          "mode": "HOLD",
+          "mission_item_id": "WP003",
+          "fault_id": "F-OBS-STALE-001",
+          "recovery_decision": "BLOCK_RESUME",
+          "resume_allowed": false,
+          "acknowledgement": "missing",
+          "reason_codes": [
+            "fault_clear_stale",
+            "operator_ack_missing"
+          ],
+          "actuator_state": {
+            "pump_pwm_us": 1000,
+            "left_spray_valve": 0,
+            "right_spray_valve": 0,
+            "agitation": 0
+          }
+        }
+      ],
+      "expected": {
+        "validation_result": "PASS",
+        "final_state": "RECOVERY_BLOCKED",
+        "mission_complete": false,
+        "resume_allowed": false,
+        "required_reason_codes": [
+          "fault_clear_stale",
+          "operator_ack_missing"
+        ],
+        "safe_output_event_types": [
+          "HOLD_ENTERED",
+          "ACTUATORS_SAFE",
+          "FAULT_CLEAR",
+          "POSITION_CONFIDENCE",
+          "RECOVERY_DECISION"
+        ]
+      }
+    }
+  ],
+  "negative_telemetry_cases": [
+    {
+      "id": "missing_required_fault_id_fails_validation",
+      "description": "Validator must reject a fault telemetry record that is missing the required fault_id field.",
+      "base_scenario_id": "recoverable_obstacle_resume_tail_and_complete",
+      "mutation": {
+        "event_seq": 3,
+        "drop_fields": [
+          "fault_id"
+        ]
+      },
+      "expected": {
+        "validation_result": "FAIL",
+        "reason_codes": [
+          "missing_required_field:fault_id"
+        ]
+      }
+    },
+    {
+      "id": "missing_recovery_decision_event_fails_validation",
+      "description": "Validator must reject a recovered mission telemetry log that omits the required RECOVERY_DECISION event.",
+      "base_scenario_id": "recoverable_obstacle_resume_tail_and_complete",
+      "mutation": {
+        "drop_event_types": [
+          "RECOVERY_DECISION"
+        ]
+      },
+      "expected": {
+        "validation_result": "FAIL",
+        "reason_codes": [
+          "missing_required_event:RECOVERY_DECISION"
+        ]
+      }
+    }
+  ],
+  "safety_invariants": [
+    "HOLD_ENTERED, ACTUATORS_SAFE, FAULT_CLEAR while held, blocked recovery, HOLD_TIMEOUT, MISSION_ABORTED, and MISSION_COMPLETE events must carry safe/off actuator_state values.",
+    "A recoverable fault may resume only when clear_event_age_s is less than or equal to max_fault_clear_age_s and any required acknowledgement is present.",
+    "A mission may resume spraying only at the first spray-ledger work unit whose ledger_status is not sprayed.",
+    "Any spray request for a spray_unit_id already marked sprayed must be suppressed, logged as DUPLICATE_SPRAY_SUPPRESSED, and leave pump and valves off.",
+    "Telemetry sequence numbers must increase strictly, timestamps must be nondecreasing, and all outcome-required event types and fields must be present."
+  ]
+}
