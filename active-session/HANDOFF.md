@@ -8,7 +8,7 @@ Active branch: `feat/sitl-fault-recovery-telemetry`.
 
 Draft PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7.
 
-`active_feature` points to `FEAT-010`. FEAT-001 through FEAT-009 are PASSING and merged into `main`. FEAT-010 is ACTIVE / not passing.
+`active_feature` points to `FEAT-010`. FEAT-001 through FEAT-010 are PASSING after FEAT-010 was verified and marked via `python scripts/update-feature.py feature-list.json`.
 
 ## Key Goal Clarification
 
@@ -31,77 +31,19 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - Reviewed component 3 and recorded `REVIEW FEAT-010 fault recovery docs: PASS` in `active-session/progress.log`.
 - Created FEAT-010 implementation component 4: `scripts/check-gate.sh` now runs `scripts/validate-fault-recovery-telemetry.py` before the active verification-status check.
 - Reviewed component 4 and recorded `REVIEW FEAT-010 check-gate wiring: PASS` in `active-session/progress.log`.
+- Completed final FEAT-010 verification evidence in `stage-gates/active/FEAT-010/04-verification.md` with exact command/output blocks and `STATUS: PASS`.
+- Reran the full repository gate successfully, marked FEAT-010 passing with `python scripts/update-feature.py feature-list.json`, and reran the full repository gate successfully again.
+- Reviewed final verification evidence and recorded `REVIEW FEAT-010 verification evidence: PASS` in `active-session/progress.log`.
 
 ## Latest Verification Commands
 
 ```bash
-git rev-parse --show-toplevel
-printf 'BRANCH='; git branch --show-current
-git remote -v
-git status --short --branch
-git diff --stat
 bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
 ```
 
 Output:
 
 ```text
-/home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
-BRANCH=feat/sitl-fault-recovery-telemetry
-origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
-origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
-## feat/sitl-fault-recovery-telemetry...origin/feat/sitl-fault-recovery-telemetry
-Initializing auto_AGVsprayer4fertigation workspace...
-No build or test toolchain is configured yet.
-Add setup commands here when source code is introduced.
-PASS: preflight dosing contract validated
-Validated scenarios: 3 (1 safe, 2 blocked)
-Mission spray segments: 2
-Reference target_flow_lpm: 0.600
-PASS: position confidence contract validated
-Validated scenarios: 6 (2 continue, 4 safe_hold)
-Decision counts: RTK_CONFIDENT=1 DEAD_RECKONING_ACTIVE=1 SAFE_HOLD=4
-Mission spray segments: 2
-Fallback budget: 6.0s / 1.500m
-FAIL: verification gate status must be PASS
-CHECK_GATE_EXIT=1
-```
-
-```bash
-git status --short --branch
-git diff -- scripts/check-gate.sh
-bash -n scripts/check-gate.sh
-python -m py_compile scripts/validate-fault-recovery-telemetry.py
-python scripts/validate-fault-recovery-telemetry.py sitl/fault-recovery-telemetry.v0.json
-bash init.sh && bash scripts/check-gate.sh; code=$?; echo CHECK_GATE_EXIT=$code; exit 0
-```
-
-Output:
-
-```text
-## feat/sitl-fault-recovery-telemetry...origin/feat/sitl-fault-recovery-telemetry
- M scripts/check-gate.sh
-diff --git a/scripts/check-gate.sh b/scripts/check-gate.sh
-index dde5fe4..9b46fc1 100644
---- a/scripts/check-gate.sh
-+++ b/scripts/check-gate.sh
-@@ -12,6 +12,10 @@ if [[ -x "$ROOT_DIR/scripts/validate-position-confidence.py" ]]; then
-   python "$ROOT_DIR/scripts/validate-position-confidence.py"
- fi
- 
-+if [[ -x "$ROOT_DIR/scripts/validate-fault-recovery-telemetry.py" ]]; then
-+  python "$ROOT_DIR/scripts/validate-fault-recovery-telemetry.py"
-+fi
-+
- python "$ROOT_DIR/scripts/update-feature.py" --check-only "$FEATURE_FILE"
- 
- if [[ -x "$ROOT_DIR/scripts/validate-contracts.py" ]]; then
-PASS: fault recovery telemetry contract validated
-Validated scenarios: 5 (3 complete, 3 hold-entered, 2 resume/continue decisions)
-Outcome counts: MISSION_COMPLETE_AFTER_RECOVERY=1 BOUNDED_DEAD_RECKONING_COMPLETE=1 DUPLICATE_SUPPRESSED_COMPLETE=1 MISSION_ABORTED=1 RESUME_BLOCKED=1
-Duplicate suppression events: 1
-Negative telemetry cases: 2
-Recovery policy: max_clear_age=2.0s max_hold=15.0s safe_latency=200ms
 Initializing auto_AGVsprayer4fertigation workspace...
 No build or test toolchain is configured yet.
 Add setup commands here when source code is introduced.
@@ -120,20 +62,34 @@ Outcome counts: MISSION_COMPLETE_AFTER_RECOVERY=1 BOUNDED_DEAD_RECKONING_COMPLET
 Duplicate suppression events: 1
 Negative telemetry cases: 2
 Recovery policy: max_clear_age=2.0s max_hold=15.0s safe_latency=200ms
-FAIL: verification gate status must be PASS
-CHECK_GATE_EXIT=1
-```
-
-Placeholder scan for `scripts/check-gate.sh`:
-
-```text
-No matches for TODO/TBD/placeholder/stub/expected output/expected evidence/lorem/fixme.
+Gate check passed
+Validated route/spray/safety contracts: routes/examples/cucumber-row-route.example.json
+Mission contract simulation PASS: routes/examples/cucumber-row-route.example.json
+- ROW_ENTRY entry_transit: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- SPRAY_ON row_01_left_spray: spray=LEFT speed=0.25 outputs={'pump': True, 'left_valve': True, 'right_valve': False}
+- SPRAY_TRANSITION OFF->LEFT at row_01_left_spray
+- FAULT_STOP front_obstacle during row_01_left_spray: mode=HOLD outputs={'pump': False, 'left_valve': False, 'right_valve': False} operator_review_required=True
+- SPRAY_TRANSITION LEFT->OFF at row_01_exit_off
+- ROW_EXIT row_01_exit_off: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+- MISSION_END return_to_hold: spray=OFF outputs={'pump': False, 'left_valve': False, 'right_valve': False}
+Validated hardware BOM/pinout contract: hardware/bom-pinout.v0.json
+Validated bench ratings contract: hardware/bench-test-ratings.v0.json margin=3.3x
+Validated bench procedure contract: hardware/bench-test-procedure.v0.json tests=8
+Validated Pixhawk actuator mapping: hardware/pixhawk-actuator-mapping.v0.json
+Validated ArduRover parameter export: hardware/pixhawk-ardurover-sprayer.param
+ACTUATOR_OUTPUTS=AUX1,AUX2,AUX3,AUX4,AUX5
+PARAMETERS=BRD_PWM_COUNT,SERVO9_FUNCTION,SERVO9_MIN,SERVO9_MAX,RELAY1_PIN,RELAY1_DEFAULT,RELAY2_PIN,RELAY2_DEFAULT,RELAY3_PIN,RELAY3_DEFAULT,RELAY4_PIN,RELAY4_DEFAULT
+MISSION_EXPORT_VALIDATION_OK
+SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
+COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
+SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
+CHECK_GATE_EXIT=0
 ```
 
 ## Current Blocker
 
-FEAT-010 remains failing closed because `stage-gates/active/FEAT-010/04-verification.md` is still `STATUS: FAIL`. The validator is now wired and passing in the full gate before the intentional verification-status failure.
+No repository feature-gate blocker remains. FEAT-010 is passing; the remaining integration step is PR #7 review/merge readiness.
 
 ## Next Concrete Step
 
-Implement final verification evidence only: update `stage-gates/active/FEAT-010/04-verification.md` with actual command/output blocks for `bash -n scripts/check-gate.sh`, `python -m py_compile scripts/validate-fault-recovery-telemetry.py`, `python scripts/validate-fault-recovery-telemetry.py sitl/fault-recovery-telemetry.v0.json`, and the full `bash init.sh && bash scripts/check-gate.sh` run; set exact `STATUS: PASS`; rerun the gate; then run `python scripts/update-feature.py feature-list.json` only after the gate succeeds.
+After PR #7 is merged, choose the next feature direction instead of inventing work automatically. Recommended options: MAVLink/Mission Planner export upgrades, hardware BOM/pinout refinement, or physical prototype control code.
