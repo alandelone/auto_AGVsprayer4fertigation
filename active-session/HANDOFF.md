@@ -6,7 +6,7 @@ Repository memory scaffold uses the SSOT design. `feature-list.json` owns `activ
 
 Active branch: `feat/sitl-fault-recovery-telemetry`.
 
-Draft PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7.
+PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7 (OPEN, non-draft, mergeStateStatus=CLEAN, no status checks configured as of 2026-07-30T17:45:32Z).
 
 `active_feature` points to `FEAT-010`. FEAT-001 through FEAT-010 are PASSING after FEAT-010 was verified and marked via `python scripts/update-feature.py feature-list.json`.
 
@@ -34,6 +34,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - Completed final FEAT-010 verification evidence in `stage-gates/active/FEAT-010/04-verification.md` with exact command/output blocks and `STATUS: PASS`.
 - Reran the full repository gate successfully, marked FEAT-010 passing with `python scripts/update-feature.py feature-list.json`, and reran the full repository gate successfully again.
 - Reviewed final verification evidence and recorded `REVIEW FEAT-010 verification evidence: PASS` in `active-session/progress.log`.
+- Committed FEAT-010 completion as `a85dad3`, pushed `origin/feat/sitl-fault-recovery-telemetry`, updated the PR body, marked PR #7 ready for review, and verified PR #7 is OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks.
 
 ## Latest Verification Commands
 
@@ -88,7 +89,7 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-No repository feature-gate blocker remains. FEAT-010 is passing; the remaining integration step is PR #7 review/merge readiness.
+No repository feature-gate blocker remains. FEAT-010 is passing; the remaining integration step is PR #7 review/merge.
 
 ## Next Concrete Step
 
