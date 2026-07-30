@@ -1,7 +1,7 @@
 {
   "project": "auto_AGVsprayer4fertigation",
   "version": "0.1.0",
-  "active_feature": "FEAT-008",
+  "active_feature": "FEAT-009",
   "features": [
     {
       "id": "FEAT-001",
@@ -64,7 +64,7 @@
       "module": "SITL Navigation & Failsafes",
       "title": "Implement SITL position confidence gate and canopy dead reckoning fallback",
       "context": "Cross-check RTK GPS, IMU, wheel odometer, and ultrasonic distance in SITL; trigger dead reckoning or safe HOLD on canopy GPS signal loss without logic crashes.",
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEAT-010",
