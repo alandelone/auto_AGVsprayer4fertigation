@@ -6,7 +6,7 @@ Repository memory scaffold uses the SSOT design. `feature-list.json` owns `activ
 
 Active branch: `feat/sitl-fault-recovery-telemetry`.
 
-PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7 (OPEN, non-draft, mergeStateStatus=CLEAN, no status checks configured as of 2026-07-31T05:57:28Z; GitHub updatedAt=2026-07-31T02:55:57Z).
+PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7 (OPEN, non-draft, mergeStateStatus=UNKNOWN, no status checks configured as of 2026-07-31T08:59:21Z; GitHub updatedAt=2026-07-31T05:58:33Z).
 
 `active_feature` points to `FEAT-010`. FEAT-001 through FEAT-010 are PASSING after FEAT-010 was verified and marked via `python scripts/update-feature.py feature-list.json`.
 
@@ -38,6 +38,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - 2026-07-30T23:51:19Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing.
 - 2026-07-31T02:54:53Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing.
 - 2026-07-31T05:57:28Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing.
+- 2026-07-31T08:59:21Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=UNKNOWN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending PR review/merge or next feature selection.
 
 ## Latest Verification Commands
 
@@ -92,8 +93,8 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-No repository feature-gate blocker remains. FEAT-010 is passing; PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks as of 2026-07-31T05:57:28Z, so the remaining integration step is PR #7 review/merge.
+No repository feature-gate blocker remains. FEAT-010 is passing; PR #7 remains OPEN/non-draft with `mergeStateStatus=UNKNOWN` and no status checks as of 2026-07-31T08:59:21Z, so the remaining integration step is PR #7 review/merge.
 
 ## Next Concrete Step
 
-After PR #7 is merged, choose the next feature direction instead of inventing work automatically. Recommended options: MAVLink/Mission Planner export upgrades, hardware BOM/pinout refinement, or physical prototype control code.
+After PR #7 is reviewed/merged, choose the next feature direction instead of inventing work automatically. Recommended options: MAVLink/Mission Planner export upgrades, hardware BOM/pinout refinement, or physical prototype control code.
