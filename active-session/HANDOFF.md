@@ -6,7 +6,7 @@ Repository memory scaffold uses the SSOT design. `feature-list.json` owns `activ
 
 Active branch: `feat/sitl-fault-recovery-telemetry`.
 
-PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7 (OPEN, non-draft, mergeStateStatus=CLEAN, no status checks configured as of 2026-07-31T21:11:27Z; GitHub updatedAt=2026-07-31T18:09:32Z).
+PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7 (OPEN, non-draft, mergeStateStatus=UNKNOWN after heartbeat push, no status checks configured as of 2026-07-31T21:12:55Z; GitHub updatedAt=2026-07-31T21:12:34Z).
 
 `active_feature` points to `FEAT-010`. FEAT-001 through FEAT-010 are PASSING after FEAT-010 was verified and marked via `python scripts/update-feature.py feature-list.json`.
 
@@ -42,7 +42,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - 2026-07-31T12:02:33Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=UNKNOWN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending PR review/merge or next feature selection.
 - 2026-07-31T15:05:27Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending PR review/merge or next feature selection.
 - 2026-07-31T18:08:25Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending PR review/merge or next feature selection.
-- 2026-07-31T21:11:27Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending PR review/merge or next feature selection.
+- 2026-07-31T21:11:27Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), verified GitHub auth, confirmed PR #7 was OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks before the heartbeat-note push, committed/pushed heartbeat note `b502e3f`, then verified PR #7 remains OPEN/non-draft with post-push `mergeStateStatus=UNKNOWN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending PR review/merge or next feature selection.
 
 ## Latest Verification Commands
 
@@ -101,7 +101,7 @@ CHECK_GATE_EXIT=0
 
 ## Current Blocker
 
-No repository feature-gate blocker remains. FEAT-010 is passing; PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks as of 2026-07-31T21:11:27Z, so the remaining integration step is PR #7 review/merge.
+No repository feature-gate blocker remains. FEAT-010 is passing; PR #7 remains OPEN/non-draft with post-push `mergeStateStatus=UNKNOWN` and no status checks as of 2026-07-31T21:12:55Z, so the remaining integration step is PR #7 review/merge after GitHub finishes recalculating mergeability.
 
 ## Next Concrete Step
 
