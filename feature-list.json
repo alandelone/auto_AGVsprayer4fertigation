@@ -71,7 +71,7 @@
       "module": "SITL Telemetry & Recovery",
       "title": "Validate SITL fault recovery, resume policy, and complete mission telemetry log",
       "context": "Prove SITL mission completion under simulated obstacles and sensor drops, verify safe resume without duplicate spraying, and log black-box telemetry.",
-      "passes": false
+      "passes": true
     }
   ]
 }

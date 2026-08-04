@@ -20,4 +20,5 @@ This file is the on-demand map for the repository. Keep it short and update it w
 
 - `docs/field-reference.md`: cucumber field images, candidate hardware, spraying rules, and simulation success standard.
 - `docs/position-confidence-fallback.md`: FEAT-009 SITL position-confidence states, thresholds, safe actuator behavior, and canopy dead-reckoning integration path.
+- `docs/fault-recovery-telemetry.md`: FEAT-010 SITL fault-recovery state machine, resume policy, duplicate-spray ledger, safe actuator rules, telemetry schema, and companion integration path.
 - `docs/pdf-extract-3d-agv-sprayer.txt`: extracted source text from the initial AGV sprayer PDF.
