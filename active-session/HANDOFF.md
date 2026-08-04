@@ -4,9 +4,9 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-Active branch: `feat/sitl-fault-recovery-telemetry`.
+Active branch: `main` (fast-forwarded to `origin/main` after PR #7 merge).
 
-PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7 (OPEN, non-draft, mergeStateStatus=CLEAN, no status checks configured as of 2026-08-04T04:36:43Z; GitHub updatedAt=2026-08-04T01:34:04Z). Heartbeat-note pushes may temporarily reset mergeStateStatus to UNKNOWN while GitHub recalculates.
+PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7 (MERGED as of GitHub `updatedAt=2026-08-04T04:59:41Z`; no status checks were configured).
 
 `active_feature` points to `FEAT-010`. FEAT-001 through FEAT-010 are PASSING after FEAT-010 was verified and marked via `python scripts/update-feature.py feature-list.json`.
 
@@ -69,6 +69,7 @@ The primary goal of `auto_AGVsprayer4fertigation` is developing ArduRover Pixhaw
 - 2026-08-03T22:29:49Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), parsed `feature-list.json` (`ACTIVE_FEATURE_PASSES=true`, `ALL_FEATURES_PASS=true`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending PR review/merge or next feature selection.
 - 2026-08-04T01:32:47Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), parsed `feature-list.json` (`ACTIVE_FEATURE_PASSES=true`, `ALL_FEATURES_PASS=true`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending PR review/merge or next feature selection.
 - 2026-08-04T04:36:43Z heartbeat reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), parsed `feature-list.json` (`ACTIVE_FEATURE_PASSES=true`, `ALL_FEATURES_PASS=true`), verified GitHub auth, and confirmed PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks. No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending PR review/merge or next feature selection.
+- 2026-08-04T07:41:10Z heartbeat verified PR #7 is MERGED, fetched origin, fast-forwarded local `main` to `origin/main`, reran `bash init.sh && bash scripts/check-gate.sh` successfully (`CHECK_GATE_EXIT=0`), and parsed `feature-list.json` (`ACTIVE_FEATURE_PASSES=true`, `ALL_FEATURES_PASS=true`). No implementation work was invented because FEAT-001 through FEAT-010 are already passing; queue is clear pending next feature selection.
 
 ## Latest Verification Commands
 
@@ -83,16 +84,29 @@ git diff --stat
 bash init.sh && bash scripts/check-gate.sh
 code=$?
 echo CHECK_GATE_EXIT=$code
+python - <<'PY'
+import json
+from pathlib import Path
+p=Path('feature-list.json')
+data=json.loads(p.read_text())
+active=data['active_feature']
+features=data['features']
+active_feature=next(f for f in features if f['id']==active)
+print(f"ACTIVE_FEATURE={active}")
+print(f"ACTIVE_FEATURE_PASSES={str(bool(active_feature.get('passes'))).lower()}")
+print(f"ALL_FEATURES_PASS={str(all(bool(f.get('passes')) for f in features)).lower()}")
+print('FAILING_FEATURES=' + ','.join(f['id'] for f in features if not f.get('passes')))
+PY
 exit 0
 ```
 
 Output:
 
 ```text
-TIMESTAMP=2026-08-04T04:36:43Z
+TIMESTAMP=2026-08-04T07:41:10Z
 /home/ubuntu/agents/evergreen4/auto_AGVsprayer4fertigation
-## feat/sitl-fault-recovery-telemetry...origin/feat/sitl-fault-recovery-telemetry
-feat/sitl-fault-recovery-telemetry
+## main...origin/main
+main
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (fetch)
 origin	https://github.com/alandelone/auto_AGVsprayer4fertigation.git (push)
 Initializing auto_AGVsprayer4fertigation workspace...
@@ -135,6 +149,10 @@ SOURCE_ITEMS=7 EXPORT_ITEMS=28 WAYPOINTS=6
 COMMAND_COUNTS NAV_WAYPOINT=6 DO_CHANGE_SPEED=6 DO_SET_RELAY=12 DO_SET_SERVO=4
 SAFETY_TRANSITIONS=4 ACTUATOR_COMMANDS=16
 CHECK_GATE_EXIT=0
+ACTIVE_FEATURE=FEAT-010
+ACTIVE_FEATURE_PASSES=true
+ALL_FEATURES_PASS=true
+FAILING_FEATURES=
 ```
 
 Latest PR metadata command:
@@ -146,13 +164,13 @@ gh pr view 7 --json number,url,state,isDraft,mergeStateStatus,statusCheckRollup,
 Output:
 
 ```text
-{"baseRefName":"main","headRefName":"feat/sitl-fault-recovery-telemetry","isDraft":false,"mergeStateStatus":"CLEAN","number":7,"state":"OPEN","statusCheckRollup":[],"updatedAt":"2026-08-04T01:34:04Z","url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7"}
+{"baseRefName":"main","headRefName":"feat/sitl-fault-recovery-telemetry","isDraft":false,"mergeStateStatus":"UNKNOWN","number":7,"state":"MERGED","statusCheckRollup":[],"updatedAt":"2026-08-04T04:59:41Z","url":"https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7"}
 ```
 
 ## Current Blocker
 
-No repository feature-gate blocker remains. FEAT-010 is passing; all features in `feature-list.json` are passing; PR #7 remains OPEN/non-draft with `mergeStateStatus=CLEAN` and no status checks as of 2026-08-04T04:36:43Z (GitHub updatedAt=2026-08-04T01:34:04Z). The remaining integration step is PR #7 review/merge; recheck mergeability immediately before merge because heartbeat-note pushes can temporarily set `mergeStateStatus=UNKNOWN` while GitHub recalculates.
+No repository feature-gate blocker remains. FEAT-010 is passing, all features in `feature-list.json` are passing, PR #7 is MERGED, and local `main` is fast-forwarded to `origin/main` at `c7b4ae1`. The implementation queue is clear; do not invent more work until the next feature direction is chosen.
 
 ## Next Concrete Step
 
-After PR #7 is reviewed/merged, choose the next feature direction instead of inventing work automatically. Recommended options: MAVLink/Mission Planner export upgrades, hardware BOM/pinout refinement, or physical prototype control code.
+Choose the next feature direction and create stage-gate contracts before implementation. Recommended options: MAVLink/Mission Planner export upgrades, hardware BOM/pinout refinement, or physical prototype control code.
