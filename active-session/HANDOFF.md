@@ -4,7 +4,7 @@
 
 Repository memory scaffold uses the SSOT design. `feature-list.json` owns `active_feature`.
 
-Active branch: `main` (fast-forwarded to `origin/main` after PR #7 merge).
+Active branch: `main` (synchronized with `origin/main` after PR #7 merge and heartbeat-note push).
 
 PR: #7 — https://github.com/alandelone/auto_AGVsprayer4fertigation/pull/7 (MERGED as of GitHub `updatedAt=2026-08-04T04:59:41Z`; no status checks were configured).
 
@@ -169,7 +169,7 @@ Output:
 
 ## Current Blocker
 
-No repository feature-gate blocker remains. FEAT-010 is passing, all features in `feature-list.json` are passing, PR #7 is MERGED, and local `main` is fast-forwarded to `origin/main` at `c7b4ae1`. The implementation queue is clear; do not invent more work until the next feature direction is chosen.
+No repository feature-gate blocker remains. FEAT-010 is passing, all features in `feature-list.json` are passing, PR #7 is MERGED, and local `main` is synchronized with `origin/main`. The implementation queue is clear; do not invent more work until the next feature direction is chosen.
 
 ## Next Concrete Step
 
